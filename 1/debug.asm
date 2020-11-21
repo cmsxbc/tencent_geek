@@ -20,13 +20,134 @@ readfile:
           sub       rsi, 0x4000;
           mov       rdx, 0x4000 ;bufsize
           syscall
-          mov       [rbp-0x4500], rax
+padding:
+          mov  byte [rbp-0x4000+rax], 0x80
+          mov       rdx, rax
+          mov       rdi, rax
+          and       rdx, 0x3f
+          cmp       rdx, 0x38
+          je        append_length
+          cmp       rdx, 0x38
+          jl        append_small
+          add       rax, 0x40
+append_small:
+          add       rax, 0x38
+          sub       rax, rdx
+append_length:
+          shl       rdi, 3
+          mov       [rbp-0x4000+rax], rdi
+          add       rax, 8
+          xor       rdx, rdx
+          xor       rdi, rdi
+md5sum:
+          mov dword [rbp-0x4400], 0x67452301 ; init a
+          mov dword [rbp-0x43fc], 0xefcdab89 ; init b
+          mov dword [rbp-0x43f8], 0x98badcfe ; init c
+          mov dword [rbp-0x43f4], 0x10325476 ; init d
+md5sum_loop:
+          mov       r8d, [rbp-0x4400]
+          mov       r9d, [rbp-0x43fc]
+          mov       r10d, [rbp-0x43f8]
+          mov       r11d, [rbp-0x43f4]
+          push      rax ;push filesize
+          mov       rax, 0
+md5sum_table_loop:
+          mov       edx, r11d ; use edx for calcutate, use D for first
+          push      rax
+          mov       ah, al
+          shr       ah, 4;
+          cmp       ah, 0
+          je        md5sum_op0
+          cmp       ah, 1
+          je        md5sum_op1
+          cmp       ah, 2
+          je        md5sum_op2
+          jmp       md5sum_op3
+md5sum_op0:
+          xor       edx, r10d
+          and       edx, r9d
+          xor       edx, r11d
+          jmp       md5sum_loop_common
+md5sum_op1:
+          mov       edx, r9d
+          xor       edx, r10d
+          and       edx, r11d
+          xor       edx, r10d
+          imul      eax, 5
+          inc       al
+          jmp       md5sum_loop_common
+md5sum_op2:
+          xor       edx, r10d
+          xor       edx, r9d
+          imul      eax, 3
+          add       al, 5
+          jmp       md5sum_loop_common
+md5sum_op3:
+          not       edx
+          or        edx, r9d
+          xor       edx, r10d
+          imul      eax, 7
+          jmp       md5sum_loop_common
+md5sum_loop_common:
+          add       edx, r8d ; F + A
+
+          and       rax, 0x0f;
+          add       edx, [rsi+rax*4]; F + source[i]
+
+          mov       rcx, k
+          pop       rax
+          add       edx, [rcx+rax*4]; F + K[i]
+
+          mov       rcx, rax
+          and       rcx, 0xf0
+          shr       rcx, 2
+          mov       rdi, rax
+          and       rdi, 0x03
+          add       rdi, rcx
+          xor       rcx, rcx
+          mov       rcx, rotates
+          mov  byte cl, [rcx + rdi] ;rcx: s[i]
+          and       rcx, 0xff
+
+          mov       edi, edx
+          shl       edx, cl
+          neg       cl
+          add       cl, 32
+          shr       edi, cl
+          or        edx, edi ; leftrotate(F, s[i])
+
+md5sum_rotate:
+          push      r11
+          mov       r11d, r10d
+          mov       r10d, r9d
+          add       r9d, edx
+          pop       r8
+
+md5sum_loop_check:
+          inc       al
+          cmp       al, 64
+          jl        md5sum_table_loop
+
+md5sum_mov2result:
+          add       r8d, [rbp-0x4400]
+          add       r9d, [rbp-0x43fc]
+          add       r10d, [rbp-0x43f8]
+          add       r11d, [rbp-0x43f4]
+          mov       [rbp-0x4400], r8d
+          mov       [rbp-0x43fc], r9d
+          mov       [rbp-0x43f8], r10d
+          mov       [rbp-0x43f4], r11d
+          add       rsi, 64
+          pop       rax ;pop filesize
+          sub       rax, 64
+          jnz       md5sum_loop
 convert_result:
           mov  byte [rbp-0x48e0], 0xa ; output buf + 33 <- \n
-          mov       rcx, 0
-          mov       r10, 0
+          xor       rcx, rcx
+          xor       r10, r10
+          xor       r8, r8
           mov       rdx, rbp
-          sub       rdx, 0x4000
+          sub       rdx, 0x4400
           mov       rsi, rbp
           sub       rsi, 0x4900
 convert_result_loop:
@@ -72,10 +193,6 @@ rotates   db 7, 12, 17, 22
           db 5, 9, 14, 20
           db 4, 11, 16, 23
           db 6, 10, 15, 21
-init_a    dd 0x67452301
-init_b    dd 0xefcdab89
-init_c    dd 0x98badcfe
-init_d    dd 0x10325476
 k         dd 0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee
           dd 0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501
           dd 0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be
