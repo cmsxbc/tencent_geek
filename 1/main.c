@@ -9,7 +9,53 @@ typedef struct Table
     byte	rot;	/* amount to rotate left by */
 }Table;
 
-Table tab[] =
+
+
+typedef struct MD5state
+{
+    uint len;
+    uint state[4];
+}MD5state;
+
+void encode(byte*, uint*, uint);
+void decode(uint*, byte*, uint);
+void md5(byte*, uint, MD5state*);
+
+int
+main(int argc, char **argv)
+{
+    FILE *fd;
+    fd = fopen(argv[0],"r");
+
+    byte buf[15000];
+    byte digest[16];
+    int i, n;
+    MD5state s = {
+            0,
+            {
+                0x67452301,
+                0xefcdab89,
+                0x98badcfe,
+                0x10325476
+            }
+    };
+
+    n = fread(buf, 1, 15000, fd);
+    md5(buf, n, &s);
+    encode(digest, s.state, 16);
+    for(i=0;i<16;i++) printf("%02x", digest[i]);
+    printf("\n");
+    return 0;
+}
+
+/*
+ *  I require len to be a multiple of 64 for all but
+ *  the last call
+ */
+
+void md5(byte *p, uint len, MD5state *s)
+{
+    Table tab[] =
         {
                 /* round 1 */
                 { 0xd76aa478, 0, 7},
@@ -83,51 +129,6 @@ Table tab[] =
                 { 0x2ad7d2bb, 2, 15},
                 { 0xeb86d391, 9, 21},
         };
-
-typedef struct MD5state
-{
-    uint len;
-    uint state[4];
-}MD5state;
-
-void encode(byte*, uint*, uint);
-void decode(uint*, byte*, uint);
-void md5(byte*, uint, MD5state*);
-
-int
-main(int argc, char **argv)
-{
-    FILE *fd;
-    fd = fopen(argv[0],"r");
-
-    byte buf[15000];
-    byte digest[16];
-    int i, n;
-    MD5state s = {
-            0,
-            {
-                0x67452301,
-                0xefcdab89,
-                0x98badcfe,
-                0x10325476
-            }
-    };
-
-    n = fread(buf, 1, 15000, fd);
-    md5(buf, n, &s);
-    encode(digest, s.state, 16);
-    for(i=0;i<16;i++) printf("%02x", digest[i]);
-    printf("\n");
-    return 0;
-}
-
-/*
- *  I require len to be a multiple of 64 for all but
- *  the last call
- */
-
-void md5(byte *p, uint len, MD5state *s)
-{
     uint a, b, c, d, tmp;
     uint i;
     Table *t;
