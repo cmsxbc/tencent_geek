@@ -3,7 +3,9 @@ BITS 64
 
 ehdr:           ; Elf64_Ehdr
   db 0x7f, "ELF", 2, 1, 1, 0 ; e_ident
-  times 8 db 0
+  ; times 8 db 0
+  dd 0x67452301
+  dd 0xefcdab89
   dw  2         ; e_type
   dw  0x3e      ; e_machine
   dd  1         ; e_version
@@ -13,15 +15,13 @@ ehdr:           ; Elf64_Ehdr
   dd  0         ; e_flags
   dw  ehdrsize  ; e_ehsize
   dw  phdrsize  ; e_phentsize
+phdr:
   dw  1         ; e_phnum
   dw  0         ; e_shentsize
-  dw  0         ; e_shnum
+  dw  7         ; e_shnum
   dw  0         ; e_shstrndx
-  ehdrsize  equ  $ - ehdr
+ehdrsize  equ  $ - ehdr
 
-phdr:           ; Elf64_Phdr
-  dd  1         ; p_type
-  dd  7         ; p_flags
   dq  0         ; p_offset
   dq  $$        ; p_vaddr
   dq  $$        ; p_paddr
@@ -36,9 +36,11 @@ _start:
 prepare_stack:
           mov       rbp, rsp
           sub       rsp, 0x220
-          mov QWORD rax, 0x100000000
+          inc       al
+          shl       rax, 32
           cvtsi2sd  xmm1, rax
-          mov       rax, 1
+          shr       rax, 32
+
 calc_k:
           cvtsi2sd  xmm0, rax
           movsd     [rsp], xmm0
@@ -55,14 +57,14 @@ calc_k:
           cmp       al, 64
           jle       calc_k
 padding:
-          mov       r9, 0x400000
-          mov       rax, [r9+0x60]
-          mov  byte [rax+r9], 0x80
+          mov qword rsi, 0x400000
+          mov       rax, [rsi+0x60]
+          mov  byte [rax+rsi], 0x80
           mov       rdx, rax
           push      rdx
           and       rdx, 0x3f
           ; use nothing if filesize % 64 == 0
-          add       rax, 0x38 ; if filesize % 64 < 58; use this.
+          add       rax, 0x38 ; if filesize % 64 < 58; use this.()
           ;add       rax, 078; if filesize % 64 > 58; use this
           ;cmp       rdx, 0x38
           ;je        append_length
@@ -74,19 +76,24 @@ padding:
 append_length:
           pop       rdx
           shl       rdx, 3
-          mov       [r9+rax], rdx
+          mov       [rsi+rax], rdx
           add       rax, 8
-          mov       rsi, 0x400000
 md5sum:
           mov dword [rbp-0x100], 0x67452301 ; init a
           mov dword [rbp-0xfc], 0xefcdab89 ; init b
           mov dword [rbp-0xf8], 0x98badcfe ; init c
           mov dword [rbp-0xf4], 0x10325476 ; init d
+          ; mov       r8d, 0x67452301
+          ; mov       r9d, 0xefcdab89
+          ; mov       r10d, 0x98badcfe
+          ; mov       r11d, 0x10325476
+          ; jmp       md5sum_start
 md5sum_loop:
           mov       r8d, [rbp-0x100]
           mov       r9d, [rbp-0xfc]
           mov       r10d, [rbp-0xf8]
           mov       r11d, [rbp-0xf4]
+md5sum_start:
           push      rax ;push filesize
           xor       rax, rax
 md5sum_table_loop:
@@ -141,7 +148,6 @@ md5sum_loop_common:
           add       rdi, rcx
           mov       rcx, rotates
           mov  byte cl, [rcx + rdi] ;rcx: s[i]
-          and       rcx, 0xff
 
           rol       edx, cl
 
