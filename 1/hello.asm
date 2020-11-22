@@ -37,10 +37,7 @@ _start:
           pop       rdi ; argc
           pop       rdi ; &argv[0]
 openfile:
-          xor       rax, rax
-          mov       rax, 2    ; sys_open
-          xor       rsi, rsi  ; flags
-          xor       rdx, rdx  ; mode: read
+          mov       eax, 2    ; sys_open
           syscall
 prepare_stack:
           mov       rbp, rsp
@@ -69,8 +66,6 @@ append_length:
           shl       rdi, 3
           mov       [rbp-0x4000+rax], rdi
           add       rax, 8
-          xor       rdx, rdx
-          xor       rdi, rdi
 md5sum:
           mov dword [rbp-0x4400], 0x67452301 ; init a
           mov dword [rbp-0x43fc], 0xefcdab89 ; init b
@@ -87,14 +82,19 @@ md5sum_table_loop:
           mov       edx, r11d ; use edx for calcutate, use D for first
           push      rax
           mov       ah, al
-          shr       ah, 4;
+          shr       ah, 4
           cmp       ah, 0
           je        md5sum_op0
           cmp       ah, 1
           je        md5sum_op1
           cmp       ah, 2
           je        md5sum_op2
-          jmp       md5sum_op3
+md5sum_op3:
+          not       edx
+          or        edx, r9d
+          xor       edx, r10d
+          imul      eax, 7
+          jmp       md5sum_loop_common
 md5sum_op0:
           xor       edx, r10d
           and       edx, r9d
@@ -113,13 +113,6 @@ md5sum_op2:
           xor       edx, r9d
           imul      eax, 3
           add       al, 5
-          jmp       md5sum_loop_common
-md5sum_op3:
-          not       edx
-          or        edx, r9d
-          xor       edx, r10d
-          imul      eax, 7
-          jmp       md5sum_loop_common
 md5sum_loop_common:
           add       edx, r8d ; F + A
 
@@ -131,22 +124,16 @@ md5sum_loop_common:
           add       edx, [rcx+rax*4]; F + K[i]
 
           mov       rcx, rax
-          and       rcx, 0xf0
-          shr       rcx, 2
+          and       cl, 0xf0
+          shr       cl, 2
           mov       rdi, rax
           and       rdi, 0x03
           add       rdi, rcx
-          xor       rcx, rcx
           mov       rcx, rotates
           mov  byte cl, [rcx + rdi] ;rcx: s[i]
           and       rcx, 0xff
 
-          mov       edi, edx
-          shl       edx, cl
-          neg       cl
-          add       cl, 32
-          shr       edi, cl
-          or        edx, edi ; leftrotate(F, s[i])
+          rol       edx, cl
 
 md5sum_rotate:
           push      r11
@@ -208,12 +195,9 @@ convert_result_next:
 output:
           mov       rsi, rbp
           sub       rsi, 0x4900    ; output buf
-          xor       rdx, rdx
           mov       rdx, 33  ; outputcount
-          xor       rax, rax
           mov       rax, 1    ; sys_write
-          xor       rdi, rdi
-          inc       rdi       ; fd of stdout
+          mov       rdi, 1    ; fd of stdout
           syscall
 exit:
           mov       rax, 60

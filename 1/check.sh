@@ -1,9 +1,7 @@
 #! /bin/bash
-mkdir -p build
-gcc main.c -s -o build/md5
-strip -R .gnu.version build/md5
+nasm -f bin hello.asm
+chmod +x hello
+./hello
+md5sum hello
+ls -al hello
 
-./build/md5
-md5sum build/md5
-
-ls -l build/md5
