@@ -1,11 +1,17 @@
 BITS 64
   org 0x400000
+global    _start
 
 ehdr:           ; Elf64_Ehdr
   db 0x7f, "ELF", 2, 1, 1, 0 ; e_ident
-  ; times 8 db 0
-  dd 0x67452301
-  dd 0xefcdab89
+  times 8 db 0
+  ; dd 0x67452301
+  ; dd 0xefcdab89
+; _start:
+
+;   inc       al
+;   shl       rax, 32
+;   jmp     prepare_stack
   dw  2         ; e_type
   dw  0x3e      ; e_machine
   dd  1         ; e_version
@@ -15,13 +21,21 @@ ehdr:           ; Elf64_Ehdr
   dd  0         ; e_flags
   dw  ehdrsize  ; e_ehsize
   dw  phdrsize  ; e_phentsize
+  dw  1         ; e_phnum
+  dw  0         ; e_shentsize
+  dw  0         ; e_shnum
+  dw  0         ; e_shstrndx
+; phdr:
+;   dw  1         ; e_phnum
+;   dw  0         ; e_shentsize
+;   dw  7         ; e_shnum
+;   dw  0         ; e_shstrndx
+ehdrsize  equ  $ - ehdr
 phdr:
   dw  1         ; e_phnum
   dw  0         ; e_shentsize
   dw  7         ; e_shnum
   dw  0         ; e_shstrndx
-ehdrsize  equ  $ - ehdr
-
   dq  0         ; p_offset
   dq  $$        ; p_vaddr
   dq  $$        ; p_paddr
@@ -30,17 +44,14 @@ ehdrsize  equ  $ - ehdr
   dq  0x1000    ; p_align
   phdrsize  equ  $ - phdr
 
-global    _start
-
 _start:
 prepare_stack:
-          mov       rbp, rsp
-          sub       rsp, 0x220
           inc       al
           shl       rax, 32
+          mov       rbp, rsp
+          sub       rsp, 0x220
           cvtsi2sd  xmm1, rax
           shr       rax, 32
-
 calc_k:
           cvtsi2sd  xmm0, rax
           movsd     [rsp], xmm0
@@ -79,21 +90,16 @@ append_length:
           mov       [rsi+rax], rdx
           add       rax, 8
 md5sum:
-          mov dword [rbp-0x100], 0x67452301 ; init a
-          mov dword [rbp-0xfc], 0xefcdab89 ; init b
-          mov dword [rbp-0xf8], 0x98badcfe ; init c
-          mov dword [rbp-0xf4], 0x10325476 ; init d
-          ; mov       r8d, 0x67452301
-          ; mov       r9d, 0xefcdab89
-          ; mov       r10d, 0x98badcfe
-          ; mov       r11d, 0x10325476
-          ; jmp       md5sum_start
+          mov       r8d, 0x67452301
+          mov       r9d, 0xefcdab89
+          mov       r10d, 0x98badcfe
+          mov       r11d, 0x10325476
+          push      r11
+          push      r10
+          push      r9
+          push      r8
+
 md5sum_loop:
-          mov       r8d, [rbp-0x100]
-          mov       r9d, [rbp-0xfc]
-          mov       r10d, [rbp-0xf8]
-          mov       r11d, [rbp-0xf4]
-md5sum_start:
           push      rax ;push filesize
           xor       rax, rax
 md5sum_table_loop:
@@ -164,29 +170,42 @@ md5sum_loop_check:
           jl        md5sum_table_loop
 
 md5sum_mov2result:
-          add       r8d, [rbp-0x100]
-          add       r9d, [rbp-0xfc]
-          add       r10d, [rbp-0xf8]
-          add       r11d, [rbp-0xf4]
-          mov       [rbp-0x100], r8d
-          mov       [rbp-0xfc], r9d
-          mov       [rbp-0xf8], r10d
-          mov       [rbp-0xf4], r11d
-          add       rsi, 64
           pop       rax ;pop filesize
+          pop       rbx
+          add       r8d, ebx
+          pop       rbx
+          add       r9d, ebx
+          pop       rbx
+          add       r10d, ebx
+          pop       rbx
+          add       r11d, ebx
+          push      r11
+          push      r10
+          push      r9
+          push      r8
+
+
+          add       rsi, 64
           sub       rax, 64
           jnz       md5sum_loop
+
+push_result_4_output:
+          shl       r11, 32
+          or        r11, r10
+          push      r11
+          shl       r9, 32
+          or        r9, r8
+          push      r9
+
 convert_result:
           mov  byte [rbp], 0xa ; output buf + 33 <- \n
-          xor       rcx, rcx
+          ; xor       rcx, rcx
           xor       r10, r10
           xor       r8, r8
-          mov       rdx, rbp
-          sub       rdx, 0x100
           mov       rsi, rbp
           sub       rsi, 0x20
 convert_result_loop:
-          mov  byte r8b, [rdx+rcx]
+          mov  byte r8b, [rsp+rax]
           xor       r9, r9
           mov       r9b, r8b
           shr       r8b, 4
@@ -205,12 +224,12 @@ convert_result_save:
           mov       r9, 0x100
           jmp       convert_result_d
 convert_result_next:
-          inc       cl
-          cmp       cl, 16
+          inc       al
+          cmp       al, 16
           jl        convert_result_loop
 output:
           mov       rdx, 33  ; outputcount
-          inc       al
+          mov       al, 1
           mov       dil, 1    ; fd of stdout
           syscall
 exit:
