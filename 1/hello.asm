@@ -4,14 +4,14 @@ global    _start
 
 ehdr:           ; Elf64_Ehdr
   db 0x7f, "ELF", 2, 1, 1, 0 ; e_ident
-  times 8 db 0
+  ; times 8 db 0
   ; dd 0x67452301
   ; dd 0xefcdab89
-; _start:
+_start:
 
-;   inc       al
-;   shl       rax, 32
-;   jmp     prepare_stack
+  inc       al
+  shl       rax, 32
+  jmp     prepare_stack
   dw  2         ; e_type
   dw  0x3e      ; e_machine
   dd  1         ; e_version
@@ -21,21 +21,24 @@ ehdr:           ; Elf64_Ehdr
   dd  0         ; e_flags
   dw  ehdrsize  ; e_ehsize
   dw  phdrsize  ; e_phentsize
-  dw  1         ; e_phnum
-  dw  0         ; e_shentsize
-  dw  0         ; e_shnum
-  dw  0         ; e_shstrndx
-; phdr:
-;   dw  1         ; e_phnum
-;   dw  0         ; e_shentsize
-;   dw  7         ; e_shnum
-;   dw  0         ; e_shstrndx
-ehdrsize  equ  $ - ehdr
+; ; uncomment below 4 lines for debug
+  ; dw  1         ; e_phnum
+  ; dw  0         ; e_shentsize
+  ; dw  0         ; e_shnum
+  ; dw  0         ; e_shstrndx
+; ;comment below  5 lines for debug
 phdr:
   dw  1         ; e_phnum
   dw  0         ; e_shentsize
   dw  7         ; e_shnum
   dw  0         ; e_shstrndx
+ehdrsize  equ  $ - ehdr
+; ;uncomment below  5 lines for debug
+; phdr:
+;   dw  1         ; e_phnum
+;   dw  0         ; e_shentsize
+;   dw  7         ; e_shnum
+;   dw  0         ; e_shstrndx
   dq  0         ; p_offset
   dq  $$        ; p_vaddr
   dq  $$        ; p_paddr
@@ -44,10 +47,12 @@ phdr:
   dq  0x1000    ; p_align
   phdrsize  equ  $ - phdr
 
-_start:
+
 prepare_stack:
-          inc       al
-          shl       rax, 32
+; ; uncomment below 3 line for debug
+; _start:
+;           inc       al
+;           shl       rax, 32
           mov       rbp, rsp
           sub       rsp, 0x220
           cvtsi2sd  xmm1, rax
