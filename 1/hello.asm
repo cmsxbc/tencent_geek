@@ -21,7 +21,7 @@ ehdr:           ; Elf64_Ehdr
 
 phdr:           ; Elf64_Phdr
   dd  1         ; p_type
-  dd  5         ; p_flags
+  dd  7         ; p_flags
   dq  0         ; p_offset
   dq  $$        ; p_vaddr
   dq  $$        ; p_paddr
@@ -32,25 +32,31 @@ phdr:           ; Elf64_Phdr
 
 global    _start
 
-section   .text
 _start:
-          pop       rdi ; argc
-          pop       rdi ; &argv[0]
-openfile:
-          mov       eax, 2    ; sys_open
-          syscall
 prepare_stack:
           mov       rbp, rsp
-          sub       rsp, 0x5000
-readfile:
-          mov       rdi, rax  ; fd
-          xor       rax, rax  ; sys_read
-          mov       rsi, rbp  ; buf
-          sub       rsi, 0x4000;
-          mov       rdx, 0x4000 ;bufsize
-          syscall
+          sub       rsp, 0x220
+          mov QWORD rax, 0x100000000
+          cvtsi2sd  xmm1, rax
+          mov       rax, 1
+calc_k:
+          cvtsi2sd  xmm0, rax
+          movsd     [rsp], xmm0
+          fld       QWORD [rsp]
+          fsin
+          fabs
+          movsd     [rsp], xmm1
+          fmul      QWORD [rsp]
+          fstp      QWORD [rsp]
+          movsd     xmm0, [rsp]
+          cvttsd2si rdx, xmm0
+          mov       [rsp+rax*4+0x1c], rdx
+          inc       rax
+          cmp       rax, 64
+          jle        calc_k
 padding:
-          mov  byte [rbp-0x4000+rax], 0x80
+          mov       rax, [0x400060]
+          mov  byte [rax+0x400000], 0x80
           mov       rdx, rax
           mov       rdi, rax
           and       rdx, 0x3f
@@ -64,18 +70,19 @@ append_small:
           sub       rax, rdx
 append_length:
           shl       rdi, 3
-          mov       [rbp-0x4000+rax], rdi
+          mov       [0x400000+rax], rdi
           add       rax, 8
+          mov       rsi, 0x400000
 md5sum:
-          mov dword [rbp-0x4400], 0x67452301 ; init a
-          mov dword [rbp-0x43fc], 0xefcdab89 ; init b
-          mov dword [rbp-0x43f8], 0x98badcfe ; init c
-          mov dword [rbp-0x43f4], 0x10325476 ; init d
+          mov dword [rbp-0x100], 0x67452301 ; init a
+          mov dword [rbp-0xfc], 0xefcdab89 ; init b
+          mov dword [rbp-0xf8], 0x98badcfe ; init c
+          mov dword [rbp-0xf4], 0x10325476 ; init d
 md5sum_loop:
-          mov       r8d, [rbp-0x4400]
-          mov       r9d, [rbp-0x43fc]
-          mov       r10d, [rbp-0x43f8]
-          mov       r11d, [rbp-0x43f4]
+          mov       r8d, [rbp-0x100]
+          mov       r9d, [rbp-0xfc]
+          mov       r10d, [rbp-0xf8]
+          mov       r11d, [rbp-0xf4]
           push      rax ;push filesize
           mov       rax, 0
 md5sum_table_loop:
@@ -119,9 +126,8 @@ md5sum_loop_common:
           and       rax, 0x0f;
           add       edx, [rsi+rax*4]; F + source[i]
 
-          mov       rcx, k
           pop       rax
-          add       edx, [rcx+rax*4]; F + K[i]
+          add       edx, [rbp+rax*4-0x200]; F + K[i]
 
           mov       rcx, rax
           and       cl, 0xf0
@@ -148,27 +154,27 @@ md5sum_loop_check:
           jl        md5sum_table_loop
 
 md5sum_mov2result:
-          add       r8d, [rbp-0x4400]
-          add       r9d, [rbp-0x43fc]
-          add       r10d, [rbp-0x43f8]
-          add       r11d, [rbp-0x43f4]
-          mov       [rbp-0x4400], r8d
-          mov       [rbp-0x43fc], r9d
-          mov       [rbp-0x43f8], r10d
-          mov       [rbp-0x43f4], r11d
+          add       r8d, [rbp-0x100]
+          add       r9d, [rbp-0xfc]
+          add       r10d, [rbp-0xf8]
+          add       r11d, [rbp-0xf4]
+          mov       [rbp-0x100], r8d
+          mov       [rbp-0xfc], r9d
+          mov       [rbp-0xf8], r10d
+          mov       [rbp-0xf4], r11d
           add       rsi, 64
           pop       rax ;pop filesize
           sub       rax, 64
           jnz       md5sum_loop
 convert_result:
-          mov  byte [rbp-0x48e0], 0xa ; output buf + 33 <- \n
+          mov  byte [rbp], 0xa ; output buf + 33 <- \n
           xor       rcx, rcx
           xor       r10, r10
           xor       r8, r8
           mov       rdx, rbp
-          sub       rdx, 0x4400
+          sub       rdx, 0x100
           mov       rsi, rbp
-          sub       rsi, 0x4900
+          sub       rsi, 0x20
 convert_result_loop:
           mov  byte r8b, [rdx+rcx]
           xor       r9, r9
@@ -194,7 +200,7 @@ convert_result_next:
           jl        convert_result_loop
 output:
           mov       rsi, rbp
-          sub       rsi, 0x4900    ; output buf
+          sub       rsi, 0x20    ; output buf
           mov       rdx, 33  ; outputcount
           mov       rax, 1    ; sys_write
           mov       rdi, 1    ; fd of stdout
@@ -204,27 +210,11 @@ exit:
           mov       rdi, 0
           syscall
 
-section   .data
+
 rotates   db 7, 12, 17, 22
           db 5, 9, 14, 20
           db 4, 11, 16, 23
           db 6, 10, 15, 21
-k         dd 0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee
-          dd 0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501
-          dd 0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be
-          dd 0x6b901122, 0xfd987193, 0xa679438e, 0x49b40821
-          dd 0xf61e2562, 0xc040b340, 0x265e5a51, 0xe9b6c7aa
-          dd 0xd62f105d, 0x02441453, 0xd8a1e681, 0xe7d3fbc8
-          dd 0x21e1cde6, 0xc33707d6, 0xf4d50d87, 0x455a14ed
-          dd 0xa9e3e905, 0xfcefa3f8, 0x676f02d9, 0x8d2a4c8a
-          dd 0xfffa3942, 0x8771f681, 0x6d9d6122, 0xfde5380c
-          dd 0xa4beea44, 0x4bdecfa9, 0xf6bb4b60, 0xbebfbc70
-          dd 0x289b7ec6, 0xeaa127fa, 0xd4ef3085, 0x04881d05
-          dd 0xd9d4d039, 0xe6db99e5, 0x1fa27cf8, 0xc4ac5665
-          dd 0xf4292244, 0x432aff97, 0xab9423a7, 0xfc93a039
-          dd 0x655b59c3, 0x8f0ccc92, 0xffeff47d, 0x85845dd1
-          dd 0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1
-          dd 0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391
 
 
 filesize  equ  $ - $$
