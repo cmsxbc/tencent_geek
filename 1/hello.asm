@@ -51,26 +51,30 @@ calc_k:
           movsd     xmm0, [rsp]
           cvttsd2si rdx, xmm0
           mov       [rsp+rax*4+0x1c], rdx
-          inc       rax
-          cmp       rax, 64
-          jle        calc_k
+          inc       al
+          cmp       al, 64
+          jle       calc_k
 padding:
-          mov       rax, [0x400060]
-          mov  byte [rax+0x400000], 0x80
+          mov       r9, 0x400000
+          mov       rax, [r9+0x60]
+          mov  byte [rax+r9], 0x80
           mov       rdx, rax
-          mov       rdi, rax
+          push      rdx
           and       rdx, 0x3f
-          cmp       rdx, 0x38
-          je        append_length
-          cmp       rdx, 0x38
-          jl        append_small
-          add       rax, 0x40
-append_small:
-          add       rax, 0x38
+          ; use nothing if filesize % 64 == 0
+          add       rax, 0x38 ; if filesize % 64 < 58; use this.
+          ;add       rax, 078; if filesize % 64 > 58; use this
+          ;cmp       rdx, 0x38
+          ;je        append_length
+          ;jl        append_small
+          ;add       rax, 0x40
+;append_small:
+          ;add       rax, 0x38
           sub       rax, rdx
 append_length:
-          shl       rdi, 3
-          mov       [0x400000+rax], rdi
+          pop       rdx
+          shl       rdx, 3
+          mov       [r9+rax], rdx
           add       rax, 8
           mov       rsi, 0x400000
 md5sum:
@@ -84,7 +88,7 @@ md5sum_loop:
           mov       r10d, [rbp-0xf8]
           mov       r11d, [rbp-0xf4]
           push      rax ;push filesize
-          mov       rax, 0
+          xor       rax, rax
 md5sum_table_loop:
           mov       edx, r11d ; use edx for calcutate, use D for first
           push      rax
@@ -193,21 +197,19 @@ convert_result_save:
           jnl       convert_result_next
           mov       r8b, r9b
           mov       r9, 0x100
-          jmp        convert_result_d
+          jmp       convert_result_d
 convert_result_next:
-          inc       rcx
-          cmp       rcx, 16
+          inc       cl
+          cmp       cl, 16
           jl        convert_result_loop
 output:
-          mov       rsi, rbp
-          sub       rsi, 0x20    ; output buf
           mov       rdx, 33  ; outputcount
-          mov       rax, 1    ; sys_write
-          mov       rdi, 1    ; fd of stdout
+          inc       al
+          mov       dil, 1    ; fd of stdout
           syscall
 exit:
-          mov       rax, 60
-          mov       rdi, 0
+          mov       al, 60
+          dec       dil
           syscall
 
 
