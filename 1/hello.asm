@@ -53,17 +53,13 @@ prepare_stack:
           cvtsi2sd  xmm1, rax
           shr       rax, 32
 calc_k:
-          cvtsi2sd  xmm0, rax
-          movsd     [rsp], xmm0
-          fld       QWORD [rsp]
+          mov       [rsp], rax
+          fild      QWORD [rsp]
           fsin
           fabs
           movsd     [rsp], xmm1
           fmul      QWORD [rsp]
-          fstp      QWORD [rsp]
-          movsd     xmm0, [rsp]
-          cvttsd2si rdx, xmm0
-          mov       [rsp+rax*4+0x1c], rdx
+          fisttp    QWORD [rsp+rax*4+0x1c]
           inc       al
           cmp       al, 64
           jle       calc_k
