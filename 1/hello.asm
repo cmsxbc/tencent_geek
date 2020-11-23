@@ -48,7 +48,8 @@ _start:
 prepare_stack:
           inc       al
           shl       rax, 32
-          mov       rbp, rsp
+          push      rsp
+          pop       rbp
           cvtsi2sd  xmm1, rax
           mov       cl, 64
 calc_k:
@@ -61,27 +62,13 @@ calc_k:
           fisttp    QWORD [rsp]
           loop       calc_k
 padding:
+
           mov qword rsi, 0x400000
           mov       rax, [rsi+0x60]
           mov  byte [rax+rsi], 0x80
-          mov       rdx, rax
-          push      rdx
-          and       rdx, 0x3f
-          ; use nothing if filesize % 64 == 0
-          add       rax, 0x38 ; if filesize % 64 < 58; use this.()
-          ; add       rax, 0x78; if filesize % 64 > 58; use this
-          ;cmp       rdx, 0x38
-          ;je        append_length
-          ;jl        append_small
-          ;add       rax, 0x40
-;append_small:
-          ;add       rax, 0x38
-          sub       rax, rdx
+          add       rax, pad_len
 append_length:
-          pop       rdx
-          shl       rdx, 3
-          mov       [rsi+rax], rdx
-          add       rax, 8
+          mov qword [rsi+rax-8], filesizeb
 md5sum:
           mov       r8d, 0x67452301
           mov       r9d, 0xefcdab89
@@ -139,15 +126,15 @@ md5sum_loop_common:
           pop       rax
           add       edx, [rbp+rax*8-0x200]; F + K[i]
 
-          mov       rcx, rax
+
+          mov       cl, al
           and       cl, 0xf0
           shr       cl, 2
-          mov       rdi, rax
-          and       rdi, 0x03
-          add       rdi, rcx
-          mov       rcx, rotates
-          mov  byte cl, [rcx + rdi] ;rcx: s[i]
+          push      rax
 
+          and       al, 0x03
+          mov  byte cl, [rotates + rax + rcx] ;rcx: s[i]
+          pop       rax
           rol       edx, cl
 
 md5sum_rotate:
@@ -192,10 +179,9 @@ push_result_4_output:
 
 convert_result:
           mov  byte [rbp], 0xa ; output buf + 33 <- \n
-          ; xor       rcx, rcx
-          xor       r10, r10
           xor       r8, r8
-          mov       rsi, rbp
+          push      rbp
+          pop       rsi
           sub       rsi, 0x20
 convert_result_loop:
           mov  byte r8b, [rsp+rax]
@@ -209,12 +195,11 @@ convert_result_d:
           jna       convert_result_save
           add       r8b, 0x27
 convert_result_save:
-          mov  byte [rsi+r10], r8b
-          inc       r10
-          cmp       r9, 0x100
-          jnl       convert_result_next
+          mov  byte [rsi+rdi], r8b
+          inc       rdi
+          btc       r9, 16
+          jc        convert_result_next
           mov       r8b, r9b
-          mov       r9, 0x100
           jmp       convert_result_d
 convert_result_next:
           inc       al
@@ -238,3 +223,8 @@ rotates   db 7, 12, 17, 22
 
 
 filesize  equ  $ - $$
+; use nothing if filesize % 64 == 56
+hehe      equ 0x40 ;if filesize % 64 < 56; use this.()
+; hehe      equ 0x80 ; if filesize % 64 > 56; use this
+pad_len   equ  hehe - (filesize % 64)
+filesizeb equ filesize * 8
