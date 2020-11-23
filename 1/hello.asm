@@ -46,19 +46,18 @@ phdr:
 
 _start:
 prepare_stack:
-          inc       al
-          shl       rax, 32
+          bts       rax, 32
+          push      rax
           push      rsp
           pop       rbp
-          cvtsi2sd  xmm1, rax
           mov       cl, 64
 calc_k:
           push      rcx
           fild      QWORD [rsp]
           fsin
           fabs
-          movsd     [rsp], xmm1
-          fmul      QWORD [rsp]
+          fild      QWORD [rbp]
+          fmulp     st1
           fisttp    QWORD [rsp]
           loop       calc_k
 padding:
