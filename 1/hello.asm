@@ -49,20 +49,17 @@ prepare_stack:
           inc       al
           shl       rax, 32
           mov       rbp, rsp
-          sub       rsp, 0x220
           cvtsi2sd  xmm1, rax
-          shr       rax, 32
+          mov       cl, 64
 calc_k:
-          mov       [rsp], rax
+          push      rcx
           fild      QWORD [rsp]
           fsin
           fabs
           movsd     [rsp], xmm1
           fmul      QWORD [rsp]
-          fisttp    QWORD [rsp+rax*4+0x1c]
-          inc       al
-          cmp       al, 64
-          jle       calc_k
+          fisttp    QWORD [rsp]
+          loop       calc_k
 padding:
           mov qword rsi, 0x400000
           mov       rax, [rsi+0x60]
@@ -72,7 +69,7 @@ padding:
           and       rdx, 0x3f
           ; use nothing if filesize % 64 == 0
           add       rax, 0x38 ; if filesize % 64 < 58; use this.()
-          ;add       rax, 078; if filesize % 64 > 58; use this
+          ; add       rax, 0x78; if filesize % 64 > 58; use this
           ;cmp       rdx, 0x38
           ;je        append_length
           ;jl        append_small
@@ -140,7 +137,7 @@ md5sum_loop_common:
           add       edx, [rsi+rax*4]; F + source[i]
 
           pop       rax
-          add       edx, [rbp+rax*4-0x200]; F + K[i]
+          add       edx, [rbp+rax*8-0x200]; F + K[i]
 
           mov       rcx, rax
           and       cl, 0xf0
