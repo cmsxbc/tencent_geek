@@ -75,12 +75,12 @@ md5sum:
           mov       r9d, 0xefcdab89
           mov       r10d, 0x98badcfe
           mov       r11d, 0x10325476
+
+md5sum_loop:
           push      r11
           push      r10
           push      r9
           push      r8
-
-md5sum_loop:
           push      rax ;push filesize
           xor       rax, rax
           ; mov       cl, 0x10
@@ -164,54 +164,42 @@ md5sum_mov2result:
           add       r10d, ebx
           pop       rbx
           add       r11d, ebx
-          push      r11
-          push      r10
-          push      r9
-          push      r8
-
 
           add       rsi, 64
           sub       rax, 64
           jnz       md5sum_loop
 
 push_result_4_output:
-          shl       r11, 32
-          or        r11, r10
-          push      r11
-          shl       r9, 32
-          or        r9, r8
+          mov       rcx, 0x20
+          or        rax, r11
+          shl       rax, cl
+          or        rax, r10
           push      r9
+          pop       rdx
+          shl       rdx, cl
+          or        rdx, r8
+          bswap     rdx
+          bswap     rax
+
 
 convert_result:
-          mov  byte [rbp], 0xa ; output buf + 33 <- \n
-          xor       r8, r8
-          push      rbp
-          pop       rsi
-          sub       rsi, 0x20
+          mov  byte [rsi], 0xa ; output buf + 33 <- \n
+          sub       rsi, rcx
 convert_result_loop:
-          mov  byte r8b, [rsp+rax]
-          xor       r9, r9
-          mov       r9b, r8b
-          shr       r8b, 4
+          mov  byte bl, al
 convert_result_d:
-          and       r8b, 0x0f
-          add       r8b, 0x30
-          cmp       r8b, 0x39
+          and       bl, 0x0f
+          add       bl, 0x30
+          cmp       bl, 0x39
           jna       convert_result_save
-          add       r8b, 0x27
+          add       bl, 0x27
 convert_result_save:
-          mov  byte [rsi+rdi], r8b
-          inc       rdi
-          btc       r9, 16
-          jc        convert_result_next
-          mov       r8b, r9b
-          jmp       convert_result_d
-convert_result_next:
-          inc       al
-          cmp       al, 16
-          jl        convert_result_loop
+          mov  byte [rsi+rcx-1], bl
+          shrd      rax, rdx, 4
+          shr       rdx, 4
+          loop      convert_result_loop
 output:
-          mov       rdx, 33  ; outputcount
+          mov       dl, 33  ; outputcount
           mov       al, 1
           mov       dil, 1    ; fd of stdout
           syscall
