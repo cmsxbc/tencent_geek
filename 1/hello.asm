@@ -48,6 +48,7 @@ _start:
 prepare_stack:
           bts       rax, 32
           push      rax
+          fild      QWORD [rsp]
           push      rsp
           pop       rbp
           mov       cl, 64
@@ -56,8 +57,7 @@ calc_k:
           fild      QWORD [rsp]
           fsin
           fabs
-          fild      QWORD [rbp]
-          fmulp     st1
+          fmul      st1
           fisttp    QWORD [rsp]
           loop       calc_k
 padding:
@@ -81,27 +81,39 @@ md5sum:
 md5sum_loop:
           push      rax ;push filesize
           xor       rax, rax
+          ; mov       cl, 0x10
 md5sum_table_loop:
           mov       edx, r11d ; use edx for calcutate, use D for first
           push      rax
+          ; div       cl
           mov       ah, al
-          shr       ah, 4
-          cmp       ah, 0
-          je        md5sum_op0
-          cmp       ah, 1
-          je        md5sum_op1
-          cmp       ah, 2
-          je        md5sum_op2
+          shr       ah, 5 ; consider shr 1 bit for 0x0-0x4
+                              ; 00: zf, pf
+                              ; 01: zf, pf, cf
+                              ; 10: <nothing>
+                              ; 11: cf
+                              ; ja: cf=0&zf=0
+                              ; jpo: pf=0
+                              ; jb: cf=1
+          ja        md5sum_op2
+          jpo       md5sum_op3
+          jb        md5sum_op1
+md5sum_op0:
+          xor       edx, r10d
+          and       edx, r9d
+          xor       edx, r11d
+          jmp       md5sum_loop_common
+md5sum_op2:
+          xor       edx, r10d
+          xor       edx, r9d
+          imul      eax, 3
+          add       al, 5
+          jmp       md5sum_loop_common
 md5sum_op3:
           not       edx
           or        edx, r9d
           xor       edx, r10d
           imul      eax, 7
-          jmp       md5sum_loop_common
-md5sum_op0:
-          xor       edx, r10d
-          and       edx, r9d
-          xor       edx, r11d
           jmp       md5sum_loop_common
 md5sum_op1:
           mov       edx, r9d
@@ -110,12 +122,6 @@ md5sum_op1:
           xor       edx, r10d
           imul      eax, 5
           inc       al
-          jmp       md5sum_loop_common
-md5sum_op2:
-          xor       edx, r10d
-          xor       edx, r9d
-          imul      eax, 3
-          add       al, 5
 md5sum_loop_common:
           add       edx, r8d ; F + A
 
@@ -135,13 +141,11 @@ md5sum_loop_common:
           mov  byte cl, [rotates + rax + rcx] ;rcx: s[i]
           pop       rax
           rol       edx, cl
-
 md5sum_rotate:
-          push      r11
-          mov       r11d, r10d
-          mov       r10d, r9d
-          add       r9d, edx
-          pop       r8
+          xadd      r9d, edx
+          xchg      r10d, edx
+          mov       r8d, r11d
+          mov      r11d, edx
 
 md5sum_loop_check:
           inc       al
