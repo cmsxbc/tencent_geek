@@ -46,8 +46,10 @@ phdr:
 
 _start:
 prepare_stack:
-          bts       rax, 32
-          push      rax
+          ; bts       rax, 32
+          pop       rsi
+          shl       rsi, 32
+          push      rsi
           fild      QWORD [rsp]
           push      rsp
           pop       rbp
@@ -62,7 +64,7 @@ calc_k:
           loop       calc_k
 padding:
 
-          mov qword rsi, 0x400000
+          shr       rsi, 10
           mov       rax, [rsi+0x60]
           mov  byte [rax+rsi], 0x80
           add       rax, pad_len
@@ -126,10 +128,10 @@ md5sum_loop_common:
           add       ebx, r8d ; F + A
 
           and       rax, 0x0f;
-          add       ebx, [rsi+rax*4]; F + source[i]
+          add       ebx, [rsi+rax*4]; F + source[g]
 
           pop       rax
-          add       ebx, [rbp+rax*8-0x200]; F + K[i]
+          add       ebx, [rsp+rax*8+40]; F + K[i]
 
 
           mov       cl, al
