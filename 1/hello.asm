@@ -83,7 +83,7 @@ md5sum_loop:
           xor       rax, rax
           ; mov       cl, 0x10
 md5sum_table_loop:
-          mov       edx, r11d ; use edx for calcutate, use D for first
+          mov       ebx, r11d ; use ebx for calcutate, use D for first
           push      rax
           ; div       cl
           mov       ah, al
@@ -99,37 +99,37 @@ md5sum_table_loop:
           jpo       md5sum_op3
           jb        md5sum_op1
 md5sum_op0:
-          xor       edx, r10d
-          and       edx, r9d
-          xor       edx, r11d
+          xor       ebx, r10d
+          and       ebx, r9d
+          xor       ebx, r11d
           jmp       md5sum_loop_common
 md5sum_op2:
-          xor       edx, r10d
-          xor       edx, r9d
+          xor       ebx, r10d
+          xor       ebx, r9d
           imul      eax, 3
           add       al, 5
           jmp       md5sum_loop_common
 md5sum_op3:
-          not       edx
-          or        edx, r9d
-          xor       edx, r10d
+          not       ebx
+          or        ebx, r9d
+          xor       ebx, r10d
           imul      eax, 7
           jmp       md5sum_loop_common
 md5sum_op1:
-          mov       edx, r9d
-          xor       edx, r10d
-          and       edx, r11d
-          xor       edx, r10d
+          mov       ebx, r9d
+          xor       ebx, r10d
+          and       ebx, r11d
+          xor       ebx, r10d
           imul      eax, 5
           inc       al
 md5sum_loop_common:
-          add       edx, r8d ; F + A
+          add       ebx, r8d ; F + A
 
           and       rax, 0x0f;
-          add       edx, [rsi+rax*4]; F + source[i]
+          add       ebx, [rsi+rax*4]; F + source[i]
 
           pop       rax
-          add       edx, [rbp+rax*8-0x200]; F + K[i]
+          add       ebx, [rbp+rax*8-0x200]; F + K[i]
 
 
           mov       cl, al
@@ -140,12 +140,12 @@ md5sum_loop_common:
           and       al, 0x03
           mov  byte cl, [rotates + rax + rcx] ;rcx: s[i]
           pop       rax
-          rol       edx, cl
+          rol       ebx, cl
 md5sum_rotate:
-          xadd      r9d, edx
-          xchg      r10d, edx
+          xadd      r9d, ebx
+          xchg      r10d, ebx
           mov       r8d, r11d
-          mov      r11d, edx
+          mov      r11d, ebx
 
 md5sum_loop_check:
           inc       al
