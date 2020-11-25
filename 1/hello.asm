@@ -171,13 +171,10 @@ md5sum_mov2result:
 
 push_result_4_output:
           mov       rcx, 0x20
-          or        rax, r11
-          shl       rax, cl
-          or        rax, r10
-          push      r9
-          pop       rdx
-          shl       rdx, cl
-          or        rdx, r8
+          shrd      rax, r10, cl
+          shrd      rax, r11, cl
+          shrd      rdx, r8, cl
+          shrd      rdx, r9, cl
           bswap     rdx
           bswap     rax
 
