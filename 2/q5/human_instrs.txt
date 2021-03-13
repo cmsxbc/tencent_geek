@@ -1,0 +1,63 @@
+# get_value_of_a
+
+INSTR12<                        push:[v]>    3
+OPTIN16<                        PUSH_STR>    97(a)
+INSTR24<                     as_get_prop>
+INSTR55<                            push>    0
+INSTR65<                    rec_get_prop>
+INSTR57<                     do_get_prop>
+
+
+## e
+INSTR12<                        push:[v]>    3
+OPTIN16<                        PUSH_STR>    97(a)
+@stack:
+=========
+window
+arguments
+i
+[params]
+[4]
+[0]
+[1]
+[3]
+"a"
+---------
+INSTR24<                     as_get_prop>
+INSTR55<                            push>    0
+@stack:
+=========
+window
+arguments
+i
+[params]
+[4]
+[0]
+[1]
+[params, "a"]
+0
+---------
+INSTR65<                    rec_get_prop>
+@stack:
+=========
+window
+arguments
+i
+[params]
+[4]
+[0]
+[1]
+[params["a"], 0]
+---------
+INSTR57<                     do_get_prop>
+@stack:
+=========
+window
+arguments
+i
+[params]
+[4]
+[0]
+[1]
+params["a"][0]
+---------

@@ -1,0 +1,112 @@
+2043: INSTR12<                        push:[v]>    5
+2045: INSTR48<        r.push(r[r.pop()[0]][0])>
+2046: HUMAN0 <                  get_value_of_a>    10
+2056: INSTR34<                              ge>
+2057: INSTR9 <                             not>
+2058: INSTR32<                             jnz>    2063(pos:2063)
+2060: INSTR37<                             pop>
+2061: INSTR17<                             jmp>    2183(pos:2183)
+2063: INSTR12<                        push:[v]>    6
+2065: INSTR58<                             dup>
+2066: INSTR48<        r.push(r[r.pop()[0]][0])>
+2067: OPTIN99<                     PUSH_BIGINT>    56, 55, 50, 54, 57, 48, 57(8726909)
+2098: INSTR44<                             mul>
+2099: INSTR41<                 set_stack:nopop>
+2100: INSTR31<                        swap_top>    0
+2102: INSTR12<                        push:[v]>    6
+2104: INSTR58<                             dup>
+2105: INSTR48<        r.push(r[r.pop()[0]][0])>
+2106: OPTIN99<                     PUSH_BIGINT>    49, 49, 50, 53, 56, 57, 57, 57, 48, 54, 56, 52, 50, 53, 57, 55(1125899906842597)
+2155: INSTR15<                             mod>
+2156: INSTR41<                 set_stack:nopop>
+2157: INSTR31<                        swap_top>    0
+2159: INSTR12<                        push:[v]>    5
+2161: INSTR58<                             dup>
+2162: INSTR48<        r.push(r[r.pop()[0]][0])>
+2163: INSTR58<                             dup>
+2164: INSTR31<                        swap_top>    1
+2166: INSTR31<                        swap_top>    0
+2168: INSTR55<                            push>    1
+2170: INSTR66<                             add>
+2171: INSTR41<                 set_stack:nopop>
+2172: INSTR37<                             pop>
+2173: INSTR13<                       mov:rsp,v>    0
+2175: INSTR31<                        swap_top>    0
+2177: INSTR0 <                             xor>
+2178: INSTR63<                   r.length -= v>    5
+2180: INSTR37<                             pop>
+2181: INSTR17<                             jmp>    2043(pos:2043)
+2183: INSTR12<                        push:[v]>    5
+2185: INSTR55<                            push>    0
+2187: INSTR41<                 set_stack:nopop>
+2188: INSTR31<                        swap_top>    0
+2190: INSTR37<                             pop>
+2191: INSTR37<                             pop>
+
+2192: INSTR12<                        push:[v]>    5
+2194: INSTR48<        r.push(r[r.pop()[0]][0])>
+2195: HUMAN0 <                  get_value_of_a>    11
+2205: INSTR34<                              ge>
+2206: INSTR9 <                             not>
+2207: INSTR32<                             jnz>    2212(pos:2212)
+2209: INSTR37<                             pop>
+2210: INSTR17<                             jmp>    2332(pos:2332)
+2212: INSTR12<                        push:[v]>    6
+2214: INSTR58<                             dup>
+2215: INSTR48<        r.push(r[r.pop()[0]][0])>
+2216: OPTIN99<                     PUSH_BIGINT>    53, 56, 49, 49, 55, 55, 51(5811773)
+2247: INSTR44<                             mul>
+2248: INSTR41<                 set_stack:nopop>
+2249: INSTR31<                        swap_top>    0
+2251: INSTR12<                        push:[v]>    6
+2253: INSTR58<                             dup>
+2254: INSTR48<        r.push(r[r.pop()[0]][0])>
+2255: OPTIN99<                     PUSH_BIGINT>    49, 49, 50, 53, 56, 57, 57, 57, 48, 54, 56, 52, 50, 53, 57, 55(1125899906842597)
+2304: INSTR15<                             mod>
+2305: INSTR41<                 set_stack:nopop>
+2306: INSTR31<                        swap_top>    0
+2308: INSTR12<                        push:[v]>    5
+2310: INSTR58<                             dup>
+2311: INSTR48<        r.push(r[r.pop()[0]][0])>
+2312: INSTR58<                             dup>
+2313: INSTR31<                        swap_top>    1
+2315: INSTR31<                        swap_top>    0
+2317: INSTR55<                            push>    1
+2319: INSTR66<                             add>
+2320: INSTR41<                 set_stack:nopop>
+2321: INSTR37<                             pop>
+2322: INSTR13<                       mov:rsp,v>    0
+2324: INSTR31<                        swap_top>    0
+2326: INSTR0 <                             xor>
+2327: INSTR63<                   r.length -= v>    5
+2329: INSTR37<                             pop>
+2330: INSTR17<                             jmp>    2192(pos:2192)
+2332: INSTR12<                        push:[v]>    4
+2334: INSTR58<                             dup>
+2335: INSTR48<        r.push(r[r.pop()[0]][0])>
+2336: INSTR53<                 r.push(r[v][0])>    6
+2338: INSTR66<                             add>
+2339: INSTR41<                 set_stack:nopop>
+2340: INSTR31<                        swap_top>    0
+2342: INSTR12<                        push:[v]>    4
+2344: INSTR58<                             dup>
+2345: INSTR48<        r.push(r[r.pop()[0]][0])>
+2346: OPTIN99<                     PUSH_BIGINT>    49, 49, 50, 53, 56, 57, 57, 57, 48, 54, 56, 52, 50, 53, 57, 55(1125899906842597)
+2395: INSTR15<                             mod>
+2396: INSTR41<                 set_stack:nopop>
+2397: INSTR31<                        swap_top>    0
+2399: OPTIN16<                        PUSH_STR>    112, 97, 114, 115, 101, 73, 110, 116(parseInt)
+2416: INSTR45<                             c[]>
+2417: INSTR53<                 r.push(r[v][0])>    4
+2419: INSTR52<                     call_n_args>    1
+2421: INSTR7 <                             ret>
+2422: INSTR5 <                  push:undefined>
+2423: INSTR7 <                             ret>
+2424: INSTR63<                   r.length -= v>    4
+2426: INSTR3 <                   push_callback>    38(pos:38), 0, 1, 3
+2431: INSTR8 <                  set_prop:nopop>
+2432: INSTR31<                        swap_top>    0
+2434: INSTR5 <                  push:undefined>
+2435: INSTR7 <                             ret>
+2436: INSTR37<                             pop>
+2437: INSTR37<                             pop>

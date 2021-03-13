@@ -43,7 +43,10 @@ class Code:
     operands: List[int] = field(default_factory=list)
 
     def __str__(self):
-        return f'{self.pos:>4}: {str(self.instr)}    {self._str_operands()}'
+        if len(self.operands):
+            return f'{self.pos:>4}: {str(self.instr)}    {self._str_operands()}'
+        else:
+            return f'{self.pos:>4}: {str(self.instr)}'
 
     def _str_operands(self):
         return ", ".join(map(lambda i: self._str_operand(i), range(len(self.operands))))
@@ -71,6 +74,12 @@ class OptCode(Code):
             return f'{super()._str_operands()}({r!s})'
         else:
             return super()._str_operands()
+
+
+@dataclass
+class RecOptCode(OptCode):
+    def _str_operands(self):
+        return self.instr.ops_cast(self.operands)
 
 
 @dataclass
@@ -130,16 +139,45 @@ def disassembler(program: List[int], instrs: Dict[int, Instr]) -> ReadableProgra
     return codes
 
 
-def optimize(codes: ReadableProgram[Code]) -> ReadableProgram[Code]:
+def optimize(codes: ReadableProgram[Code], level: int = -1) -> ReadableProgram[Code]:
     length = len(codes)
     i = 0
     optimized_codes = ReadableProgram()
     state = 'N'
     new_code = None
+
+    def _just_append(i):
+        optimized_codes.append(codes[i])
+        return i + 1
+
+    def _merge_opt16(i):
+        for _codes in ((16,45,55,52), (16,45,16,52)):
+            for _code, c in zip(codes[i:i+4], _codes):
+                if _code.instr.code != c:
+                    break
+            else:
+                new_code = RecOptCode(
+                    codes[i].pos,
+                    OptInstr(
+                        99,
+                        'PUSH_BIGINT', -1,
+                        ops_cast=lambda _: codes[i+2]._str_operands()
+                    )
+                )
+                for _code in codes[i:i+4]:
+                    new_code.append(_code)
+                optimized_codes.append(new_code)
+                return i + 4
+        else:
+            return _just_append(i)
+
     while i < length:
         code = codes[i]
         if state == 'N':
             if code.instr.code == 16:
+                if isinstance(code.instr, OptInstr):
+                    i = _merge_opt16(i)
+                    continue
                 state = 'APPEND_STR'
                 new_code = OptCode(
                     code.pos,
@@ -151,8 +189,7 @@ def optimize(codes: ReadableProgram[Code]) -> ReadableProgram[Code]:
                 )
                 i += 1
             else:
-                optimized_codes.append(code)
-                i += 1
+                i = _just_append(i)
         elif state == 'APPEND_STR':
             if code.instr.code != 68:
                 optimized_codes.append(new_code)
@@ -163,7 +200,7 @@ def optimize(codes: ReadableProgram[Code]) -> ReadableProgram[Code]:
         else:
             raise Exception("your are poor!")
 
-    return optimized_codes
+    return optimized_codes if len(optimized_codes) == len(codes) or level == 1 else optimize(optimized_codes, level - 1)
 
 
 if __name__ == '__main__':
@@ -175,4 +212,4 @@ if __name__ == '__main__':
         f.write(str(codes))
 
     with open('optimize_disassemble_init_program.txt', 'w+') as f:
-        f.write(str(optimize(codes)))
+        f.write(str(optimize(codes, level=-1)))

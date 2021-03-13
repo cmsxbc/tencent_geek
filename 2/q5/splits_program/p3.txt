@@ -1,0 +1,106 @@
+ 879: INSTR12<                        push:[v]>    5
+ 881: INSTR48<        r.push(r[r.pop()[0]][0])>
+ 882: HUMAN0 <                  get_value_of_a>    4
+ 892: INSTR34<                              ge>
+ 893: INSTR9 <                             not>
+ 894: INSTR32<                             jnz>    899(pos:899)
+ 896: INSTR37<                             pop>
+ 897: INSTR17<                             jmp>    1019(pos:1019)
+ 899: INSTR12<                        push:[v]>    6
+ 901: INSTR58<                             dup>
+ 902: INSTR48<        r.push(r[r.pop()[0]][0])>
+ 903: OPTIN99<                     PUSH_BIGINT>    50, 57, 57, 49, 57, 49, 57(2991919)
+ 934: INSTR44<                             mul>
+ 935: INSTR41<                 set_stack:nopop>
+ 936: INSTR31<                        swap_top>    0
+ 938: INSTR12<                        push:[v]>    6
+ 940: INSTR58<                             dup>
+ 941: INSTR48<        r.push(r[r.pop()[0]][0])>
+ 942: OPTIN99<                     PUSH_BIGINT>    49, 49, 50, 53, 56, 57, 57, 57, 48, 54, 56, 52, 50, 53, 57, 55(1125899906842597)
+ 991: INSTR15<                             mod>
+ 992: INSTR41<                 set_stack:nopop>
+ 993: INSTR31<                        swap_top>    0
+ 995: INSTR12<                        push:[v]>    5
+ 997: INSTR58<                             dup>
+ 998: INSTR48<        r.push(r[r.pop()[0]][0])>
+ 999: INSTR58<                             dup>
+1000: INSTR31<                        swap_top>    1
+1002: INSTR31<                        swap_top>    0
+1004: INSTR55<                            push>    1
+1006: INSTR66<                             add>
+1007: INSTR41<                 set_stack:nopop>
+1008: INSTR37<                             pop>
+1009: INSTR13<                       mov:rsp,v>    0
+1011: INSTR31<                        swap_top>    0
+1013: INSTR0 <                             xor>
+1014: INSTR63<                   r.length -= v>    5
+1016: INSTR37<                             pop>
+1017: INSTR17<                             jmp>    879(pos:879)
+1019: INSTR12<                        push:[v]>    5
+1021: INSTR55<                            push>    0
+1023: INSTR41<                 set_stack:nopop>
+1024: INSTR31<                        swap_top>    0
+1026: INSTR37<                             pop>
+1027: INSTR37<                             pop>
+
+1028: INSTR12<                        push:[v]>    5
+1030: INSTR48<        r.push(r[r.pop()[0]][0])>
+1031: HUMAN0 <                  get_value_of_a>    5
+1041: INSTR34<                              ge>
+1042: INSTR9 <                             not>
+1043: INSTR32<                             jnz>    1048(pos:1048)
+1045: INSTR37<                             pop>
+1046: INSTR17<                             jmp>    1168(pos:1168)
+1048: INSTR12<                        push:[v]>    6
+1050: INSTR58<                             dup>
+1051: INSTR48<        r.push(r[r.pop()[0]][0])>
+1052: OPTIN99<                     PUSH_BIGINT>    50, 49, 56, 50, 54, 52, 51(2182643)
+1083: INSTR44<                             mul>
+1084: INSTR41<                 set_stack:nopop>
+1085: INSTR31<                        swap_top>    0
+1087: INSTR12<                        push:[v]>    6
+1089: INSTR58<                             dup>
+1090: INSTR48<        r.push(r[r.pop()[0]][0])>
+1091: OPTIN99<                     PUSH_BIGINT>    49, 49, 50, 53, 56, 57, 57, 57, 48, 54, 56, 52, 50, 53, 57, 55(1125899906842597)
+1140: INSTR15<                             mod>
+1141: INSTR41<                 set_stack:nopop>
+1142: INSTR31<                        swap_top>    0
+1144: INSTR12<                        push:[v]>    5
+1146: INSTR58<                             dup>
+1147: INSTR48<        r.push(r[r.pop()[0]][0])>
+1148: INSTR58<                             dup>
+1149: INSTR31<                        swap_top>    1
+1151: INSTR31<                        swap_top>    0
+1153: INSTR55<                            push>    1
+1155: INSTR66<                             add>
+1156: INSTR41<                 set_stack:nopop>
+1157: INSTR37<                             pop>
+1158: INSTR13<                       mov:rsp,v>    0
+1160: INSTR31<                        swap_top>    0
+1162: INSTR0 <                             xor>
+1163: INSTR63<                   r.length -= v>    5
+1165: INSTR37<                             pop>
+1166: INSTR17<                             jmp>    1028(pos:1028)
+1168: INSTR12<                        push:[v]>    4
+1170: INSTR58<                             dup>
+1171: INSTR48<        r.push(r[r.pop()[0]][0])>
+1172: INSTR53<                 r.push(r[v][0])>    6
+1174: INSTR66<                             add>
+1175: INSTR41<                 set_stack:nopop>
+1176: INSTR31<                        swap_top>    0
+1178: INSTR12<                        push:[v]>    4
+1180: INSTR58<                             dup>
+1181: INSTR48<        r.push(r[r.pop()[0]][0])>
+1182: OPTIN99<                     PUSH_BIGINT>    49, 49, 50, 53, 56, 57, 57, 57, 48, 54, 56, 52, 50, 53, 57, 55(1125899906842597)
+1231: INSTR15<                             mod>
+1232: INSTR41<                 set_stack:nopop>
+1233: INSTR31<                        swap_top>    0
+1235: INSTR12<                        push:[v]>    5
+1237: INSTR55<                            push>    0
+1239: INSTR41<                 set_stack:nopop>
+1240: INSTR31<                        swap_top>    0
+1242: INSTR12<                        push:[v]>    6
+1244: OPTIN99<                     PUSH_BIGINT>    1
+1262: INSTR41<                 set_stack:nopop>
+1263: INSTR31<                        swap_top>    0
+1265: INSTR63<                   r.length -= v>    8

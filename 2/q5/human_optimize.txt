@@ -23,17 +23,23 @@
   98: INSTR41<                 set_stack:nopop>
   99: INSTR31<                        swap_top>    0
  101: INSTR63<                   r.length -= v>    6
+@stack:
+=========
+window
+arguments
+i
+[params]
+[4]
+[0]
+[1]
+---------
+
  103: INSTR12<                        push:[v]>    5
  105: INSTR48<        r.push(r[r.pop()[0]][0])>
- 106: INSTR12<                        push:[v]>    3
- 108: OPTIN16<                        PUSH_STR>    97(a)
- 111: INSTR24<                     as_get_prop>
- 112: INSTR55<                            push>    0
- 114: INSTR65<                    rec_get_prop>
- 115: INSTR57<                     do_get_prop>
+ 106: HUMAN0 <                  get_value_of_a>    0
  116: INSTR34<                              ge>
  117: INSTR9 <                             not>
- 118: INSTR32<                             jnz>    123(pos:123)
+ 118: INSTR32<                             jnz>    123(pos:123) # if  r[length-1] < r[length-2], jump 123
  120: INSTR37<                             pop>
  121: INSTR17<                             jmp>    243(pos:243)
  123: INSTR12<                        push:[v]>    6
@@ -72,14 +78,10 @@
  248: INSTR31<                        swap_top>    0
  250: INSTR37<                             pop>
  251: INSTR37<                             pop>
+
  252: INSTR12<                        push:[v]>    5
  254: INSTR48<        r.push(r[r.pop()[0]][0])>
- 255: INSTR12<                        push:[v]>    3
- 257: OPTIN16<                        PUSH_STR>    97(a)
- 260: INSTR24<                     as_get_prop>
- 261: INSTR55<                            push>    1
- 263: INSTR65<                    rec_get_prop>
- 264: INSTR57<                     do_get_prop>
+ 255: HUMAN0 <                  get_value_of_a>    1
  265: INSTR34<                              ge>
  266: INSTR9 <                             not>
  267: INSTR32<                             jnz>    272(pos:272)
@@ -138,14 +140,12 @@
  486: INSTR41<                 set_stack:nopop>
  487: INSTR31<                        swap_top>    0
  489: INSTR63<                   r.length -= v>    8
+
+
+
  491: INSTR12<                        push:[v]>    5
  493: INSTR48<        r.push(r[r.pop()[0]][0])>
- 494: INSTR12<                        push:[v]>    3
- 496: OPTIN16<                        PUSH_STR>    97(a)
- 499: INSTR24<                     as_get_prop>
- 500: INSTR55<                            push>    2
- 502: INSTR65<                    rec_get_prop>
- 503: INSTR57<                     do_get_prop>
+ 494: HUMAN0 <                  get_value_of_a>    2
  504: INSTR34<                              ge>
  505: INSTR9 <                             not>
  506: INSTR32<                             jnz>    511(pos:511)
@@ -187,14 +187,10 @@
  636: INSTR31<                        swap_top>    0
  638: INSTR37<                             pop>
  639: INSTR37<                             pop>
+
  640: INSTR12<                        push:[v]>    5
  642: INSTR48<        r.push(r[r.pop()[0]][0])>
- 643: INSTR12<                        push:[v]>    3
- 645: OPTIN16<                        PUSH_STR>    97(a)
- 648: INSTR24<                     as_get_prop>
- 649: INSTR55<                            push>    3
- 651: INSTR65<                    rec_get_prop>
- 652: INSTR57<                     do_get_prop>
+ 643: HUMAN0 <                  get_value_of_a>    3
  653: INSTR34<                              ge>
  654: INSTR9 <                             not>
  655: INSTR32<                             jnz>    660(pos:660)
@@ -253,14 +249,12 @@
  874: INSTR41<                 set_stack:nopop>
  875: INSTR31<                        swap_top>    0
  877: INSTR63<                   r.length -= v>    8
+
+
+
  879: INSTR12<                        push:[v]>    5
  881: INSTR48<        r.push(r[r.pop()[0]][0])>
- 882: INSTR12<                        push:[v]>    3
- 884: OPTIN16<                        PUSH_STR>    97(a)
- 887: INSTR24<                     as_get_prop>
- 888: INSTR55<                            push>    4
- 890: INSTR65<                    rec_get_prop>
- 891: INSTR57<                     do_get_prop>
+ 882: HUMAN0 <                  get_value_of_a>    4
  892: INSTR34<                              ge>
  893: INSTR9 <                             not>
  894: INSTR32<                             jnz>    899(pos:899)
@@ -302,14 +296,10 @@
 1024: INSTR31<                        swap_top>    0
 1026: INSTR37<                             pop>
 1027: INSTR37<                             pop>
+
 1028: INSTR12<                        push:[v]>    5
 1030: INSTR48<        r.push(r[r.pop()[0]][0])>
-1031: INSTR12<                        push:[v]>    3
-1033: OPTIN16<                        PUSH_STR>    97(a)
-1036: INSTR24<                     as_get_prop>
-1037: INSTR55<                            push>    5
-1039: INSTR65<                    rec_get_prop>
-1040: INSTR57<                     do_get_prop>
+1031: HUMAN0 <                  get_value_of_a>    5
 1041: INSTR34<                              ge>
 1042: INSTR9 <                             not>
 1043: INSTR32<                             jnz>    1048(pos:1048)
@@ -368,14 +358,12 @@
 1262: INSTR41<                 set_stack:nopop>
 1263: INSTR31<                        swap_top>    0
 1265: INSTR63<                   r.length -= v>    8
+
+
+
 1267: INSTR12<                        push:[v]>    5
 1269: INSTR48<        r.push(r[r.pop()[0]][0])>
-1270: INSTR12<                        push:[v]>    3
-1272: OPTIN16<                        PUSH_STR>    97(a)
-1275: INSTR24<                     as_get_prop>
-1276: INSTR55<                            push>    6
-1278: INSTR65<                    rec_get_prop>
-1279: INSTR57<                     do_get_prop>
+1270: HUMAN0 <                  get_value_of_a>    6
 1280: INSTR34<                              ge>
 1281: INSTR9 <                             not>
 1282: INSTR32<                             jnz>    1287(pos:1287)
@@ -417,14 +405,10 @@
 1412: INSTR31<                        swap_top>    0
 1414: INSTR37<                             pop>
 1415: INSTR37<                             pop>
+
 1416: INSTR12<                        push:[v]>    5
 1418: INSTR48<        r.push(r[r.pop()[0]][0])>
-1419: INSTR12<                        push:[v]>    3
-1421: OPTIN16<                        PUSH_STR>    97(a)
-1424: INSTR24<                     as_get_prop>
-1425: INSTR55<                            push>    7
-1427: INSTR65<                    rec_get_prop>
-1428: INSTR57<                     do_get_prop>
+1419: HUMAN0 <                  get_value_of_a>    7
 1429: INSTR34<                              ge>
 1430: INSTR9 <                             not>
 1431: INSTR32<                             jnz>    1436(pos:1436)
@@ -483,14 +467,12 @@
 1650: INSTR41<                 set_stack:nopop>
 1651: INSTR31<                        swap_top>    0
 1653: INSTR63<                   r.length -= v>    8
+
+
+
 1655: INSTR12<                        push:[v]>    5
 1657: INSTR48<        r.push(r[r.pop()[0]][0])>
-1658: INSTR12<                        push:[v]>    3
-1660: OPTIN16<                        PUSH_STR>    97(a)
-1663: INSTR24<                     as_get_prop>
-1664: INSTR55<                            push>    8
-1666: INSTR65<                    rec_get_prop>
-1667: INSTR57<                     do_get_prop>
+1658: HUMAN0 <                  get_value_of_a>    8
 1668: INSTR34<                              ge>
 1669: INSTR9 <                             not>
 1670: INSTR32<                             jnz>    1675(pos:1675)
@@ -532,14 +514,10 @@
 1800: INSTR31<                        swap_top>    0
 1802: INSTR37<                             pop>
 1803: INSTR37<                             pop>
+
 1804: INSTR12<                        push:[v]>    5
 1806: INSTR48<        r.push(r[r.pop()[0]][0])>
-1807: INSTR12<                        push:[v]>    3
-1809: OPTIN16<                        PUSH_STR>    97(a)
-1812: INSTR24<                     as_get_prop>
-1813: INSTR55<                            push>    9
-1815: INSTR65<                    rec_get_prop>
-1816: INSTR57<                     do_get_prop>
+1807: HUMAN0 <                  get_value_of_a>    9
 1817: INSTR34<                              ge>
 1818: INSTR9 <                             not>
 1819: INSTR32<                             jnz>    1824(pos:1824)
@@ -598,14 +576,12 @@
 2038: INSTR41<                 set_stack:nopop>
 2039: INSTR31<                        swap_top>    0
 2041: INSTR63<                   r.length -= v>    8
+
+
+
 2043: INSTR12<                        push:[v]>    5
 2045: INSTR48<        r.push(r[r.pop()[0]][0])>
-2046: INSTR12<                        push:[v]>    3
-2048: OPTIN16<                        PUSH_STR>    97(a)
-2051: INSTR24<                     as_get_prop>
-2052: INSTR55<                            push>    10
-2054: INSTR65<                    rec_get_prop>
-2055: INSTR57<                     do_get_prop>
+2046: HUMAN0 <                  get_value_of_a>    10
 2056: INSTR34<                              ge>
 2057: INSTR9 <                             not>
 2058: INSTR32<                             jnz>    2063(pos:2063)
@@ -647,14 +623,10 @@
 2188: INSTR31<                        swap_top>    0
 2190: INSTR37<                             pop>
 2191: INSTR37<                             pop>
+
 2192: INSTR12<                        push:[v]>    5
 2194: INSTR48<        r.push(r[r.pop()[0]][0])>
-2195: INSTR12<                        push:[v]>    3
-2197: OPTIN16<                        PUSH_STR>    97(a)
-2200: INSTR24<                     as_get_prop>
-2201: INSTR55<                            push>    11
-2203: INSTR65<                    rec_get_prop>
-2204: INSTR57<                     do_get_prop>
+2195: HUMAN0 <                  get_value_of_a>    11
 2205: INSTR34<                              ge>
 2206: INSTR9 <                             not>
 2207: INSTR32<                             jnz>    2212(pos:2212)

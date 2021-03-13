@@ -1,4 +1,4 @@
-let program = [
+var program = [
 33,
 3,
 25,
@@ -2458,24 +2458,24 @@ var __TENCENT_CHAOS_STACK = function() {
             for (h = 0; h < t; h++) {
                 p[h] = e[f++];
             }
-            console.log("instr3================================");
-            console.log(`f:${f}`);
-            console.log(`e:${e}`);
-            console.log(`c:${c}`);
-            console.log(`r:${r}`);
-            console.log(`l:${l}`);
-            console.log(`g:${g}`);
-            console.log(`s:${s}`);
-            console.log(`a:${a}`);
-            console.log(`o:${o}`);
-            console.log(`n:${n}`);
-            console.log(`t:${t}`);
-            console.log(`h:${h}`);
-            console.log(`p:${p}`);
-            console.log(`f:${f}`);
-            console.log(`u:${u}`);
-            console.log(`r:${r}`);
-            console.log("instr3--------------------------------");
+            // console.log("instr3================================");
+            // console.log(`f:${f}`);
+            // console.log(`e:${e}`);
+            // console.log(`c:${c}`);
+            // console.log(`r:${r}`);
+            // console.log(`l:${l}`);
+            // console.log(`g:${g}`);
+            // console.log(`s:${s}`);
+            // console.log(`a:${a}`);
+            // console.log(`o:${o}`);
+            // console.log(`n:${n}`);
+            // console.log(`t:${t}`);
+            // console.log(`h:${h}`);
+            // console.log(`p:${p}`);
+            // console.log(`f:${f}`);
+            // console.log(`u:${u}`);
+            // console.log(`r:${r}`);
+            // console.log("instr3--------------------------------");
             r.push(function i() {
                 var n = u.slice(0);
                 n[0] = [this],
@@ -2486,6 +2486,29 @@ var __TENCENT_CHAOS_STACK = function() {
                         n[p[t]] = [arguments[t]];
                     }
                 }
+                // console.log("real func ================================");
+                // console.log(`f:${f}`);
+                // console.log(`e:${e}`);
+                // console.log(`c:${c}`);
+                // console.log(`r:${r}`);
+                // console.log(`l:${l}`);
+                // console.log(l);
+                // console.log(`g:${g}`);
+                // console.log(`s:${s}`);
+                // console.log(`a:${a}`);
+                // console.log(`o:${o}`);
+                // console.log(`n:${n}`);
+                // console.log(n[3]);
+                // console.log(`t:${t}`);
+                // console.log(`h:${h}`);
+                // console.log(`p:${p}`);
+                // console.log(p);
+                // console.log(`f:${f}`);
+                // console.log(`u:${u}`);
+                // console.log(`r:${r}`);
+                // console.log("real func --------------------------------");
+                // return "1"
+                // return __TENCENT_CHAOS_VM(38, program, window, [window, arguments, i, [params]], {}, undefined, undefined, undefined)
                 return __TENCENT_CHAOS_VM(o, e, c, n, l, g, s, a)
             })
         };
