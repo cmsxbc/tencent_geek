@@ -1,0 +1,1460 @@
+   0: INSTR33<                    r.length = v>    3
+   2: INSTR25<                  set[]_if_undef>    2
+   4: INSTR16<                         push:"">    
+   5: INSTR68<                      append_str>    119(w)
+   7: INSTR68<                      append_str>    105(i)
+   9: INSTR68<                      append_str>    110(n)
+  11: INSTR68<                      append_str>    100(d)
+  13: INSTR68<                      append_str>    111(o)
+  15: INSTR68<                      append_str>    119(w)
+  17: INSTR45<                             c[]>    
+  18: INSTR16<                         push:"">    
+  19: INSTR68<                      append_str>    67(C)
+  21: INSTR68<                      append_str>    65(A)
+  23: INSTR68<                      append_str>    49(1)
+  25: INSTR68<                      append_str>    56(8)
+  27: INSTR68<                      append_str>    48(0)
+  29: INSTR68<                      append_str>    55(7)
+  31: INSTR68<                      append_str>    69(E)
+  33: INSTR68<                      append_str>    66(B)
+  35: INSTR65<                    rec_get_prop>    
+  36: INSTR17<                             jmp>    2426(pos:2426)
+  38: INSTR33<                    r.length = v>    7
+  40: INSTR25<                  set[]_if_undef>    2
+  42: INSTR25<                  set[]_if_undef>    3
+  44: INSTR25<                  set[]_if_undef>    4
+  46: INSTR25<                  set[]_if_undef>    5
+  48: INSTR25<                  set[]_if_undef>    6
+  50: INSTR12<                        push:[v]>    4
+  52: INSTR16<                         push:"">    
+  53: INSTR68<                      append_str>    66(B)
+  55: INSTR68<                      append_str>    105(i)
+  57: INSTR68<                      append_str>    103(g)
+  59: INSTR68<                      append_str>    73(I)
+  61: INSTR68<                      append_str>    110(n)
+  63: INSTR68<                      append_str>    116(t)
+  65: INSTR45<                             c[]>    
+  66: INSTR55<                            push>    0
+  68: INSTR52<                     call_n_args>    1
+  70: INSTR41<                 set_stack:nopop>    
+  71: INSTR12<                        push:[v]>    5
+  73: INSTR55<                            push>    0
+  75: INSTR41<                 set_stack:nopop>    
+  76: INSTR31<                        swap_top>    0
+  78: INSTR12<                        push:[v]>    6
+  80: INSTR16<                         push:"">    
+  81: INSTR68<                      append_str>    66(B)
+  83: INSTR68<                      append_str>    105(i)
+  85: INSTR68<                      append_str>    103(g)
+  87: INSTR68<                      append_str>    73(I)
+  89: INSTR68<                      append_str>    110(n)
+  91: INSTR68<                      append_str>    116(t)
+  93: INSTR45<                             c[]>    
+  94: INSTR55<                            push>    1
+  96: INSTR52<                     call_n_args>    1
+  98: INSTR41<                 set_stack:nopop>    
+  99: INSTR31<                        swap_top>    0
+ 101: INSTR63<                   r.length -= v>    6
+ 103: INSTR12<                        push:[v]>    5
+ 105: INSTR48<        r.push(r[r.pop()[0]][0])>    
+ 106: INSTR12<                        push:[v]>    3
+ 108: INSTR16<                         push:"">    
+ 109: INSTR68<                      append_str>    97(a)
+ 111: INSTR24<                     as_get_prop>    
+ 112: INSTR55<                            push>    0
+ 114: INSTR65<                    rec_get_prop>    
+ 115: INSTR57<                     do_get_prop>    
+ 116: INSTR34<                              ge>    
+ 117: INSTR9 <                             not>    
+ 118: INSTR32<                             jnz>    123(pos:123)
+ 120: INSTR37<                             pop>    
+ 121: INSTR17<                             jmp>    243(pos:243)
+ 123: INSTR12<                        push:[v]>    6
+ 125: INSTR58<                             dup>    
+ 126: INSTR48<        r.push(r[r.pop()[0]][0])>    
+ 127: INSTR16<                         push:"">    
+ 128: INSTR68<                      append_str>    66(B)
+ 130: INSTR68<                      append_str>    105(i)
+ 132: INSTR68<                      append_str>    103(g)
+ 134: INSTR68<                      append_str>    73(I)
+ 136: INSTR68<                      append_str>    110(n)
+ 138: INSTR68<                      append_str>    116(t)
+ 140: INSTR45<                             c[]>    
+ 141: INSTR16<                         push:"">    
+ 142: INSTR68<                      append_str>    49(1)
+ 144: INSTR68<                      append_str>    54(6)
+ 146: INSTR68<                      append_str>    54(6)
+ 148: INSTR68<                      append_str>    49(1)
+ 150: INSTR68<                      append_str>    53(5)
+ 152: INSTR68<                      append_str>    57(9)
+ 154: INSTR68<                      append_str>    52(4)
+ 156: INSTR52<                     call_n_args>    1
+ 158: INSTR44<                             mul>    
+ 159: INSTR41<                 set_stack:nopop>    
+ 160: INSTR31<                        swap_top>    0
+ 162: INSTR12<                        push:[v]>    6
+ 164: INSTR58<                             dup>    
+ 165: INSTR48<        r.push(r[r.pop()[0]][0])>    
+ 166: INSTR16<                         push:"">    
+ 167: INSTR68<                      append_str>    66(B)
+ 169: INSTR68<                      append_str>    105(i)
+ 171: INSTR68<                      append_str>    103(g)
+ 173: INSTR68<                      append_str>    73(I)
+ 175: INSTR68<                      append_str>    110(n)
+ 177: INSTR68<                      append_str>    116(t)
+ 179: INSTR45<                             c[]>    
+ 180: INSTR16<                         push:"">    
+ 181: INSTR68<                      append_str>    49(1)
+ 183: INSTR68<                      append_str>    49(1)
+ 185: INSTR68<                      append_str>    50(2)
+ 187: INSTR68<                      append_str>    53(5)
+ 189: INSTR68<                      append_str>    56(8)
+ 191: INSTR68<                      append_str>    57(9)
+ 193: INSTR68<                      append_str>    57(9)
+ 195: INSTR68<                      append_str>    57(9)
+ 197: INSTR68<                      append_str>    48(0)
+ 199: INSTR68<                      append_str>    54(6)
+ 201: INSTR68<                      append_str>    56(8)
+ 203: INSTR68<                      append_str>    52(4)
+ 205: INSTR68<                      append_str>    50(2)
+ 207: INSTR68<                      append_str>    53(5)
+ 209: INSTR68<                      append_str>    57(9)
+ 211: INSTR68<                      append_str>    55(7)
+ 213: INSTR52<                     call_n_args>    1
+ 215: INSTR15<                             mod>    
+ 216: INSTR41<                 set_stack:nopop>    
+ 217: INSTR31<                        swap_top>    0
+ 219: INSTR12<                        push:[v]>    5
+ 221: INSTR58<                             dup>    
+ 222: INSTR48<        r.push(r[r.pop()[0]][0])>    
+ 223: INSTR58<                             dup>    
+ 224: INSTR31<                        swap_top>    1
+ 226: INSTR31<                        swap_top>    0
+ 228: INSTR55<                            push>    1
+ 230: INSTR66<                             add>    
+ 231: INSTR41<                 set_stack:nopop>    
+ 232: INSTR37<                             pop>    
+ 233: INSTR13<                       mov:rsp,v>    0
+ 235: INSTR31<                        swap_top>    0
+ 237: INSTR0 <                             xor>    
+ 238: INSTR63<                   r.length -= v>    5
+ 240: INSTR37<                             pop>    
+ 241: INSTR17<                             jmp>    103(pos:103)
+ 243: INSTR12<                        push:[v]>    5
+ 245: INSTR55<                            push>    0
+ 247: INSTR41<                 set_stack:nopop>    
+ 248: INSTR31<                        swap_top>    0
+ 250: INSTR37<                             pop>    
+ 251: INSTR37<                             pop>    
+ 252: INSTR12<                        push:[v]>    5
+ 254: INSTR48<        r.push(r[r.pop()[0]][0])>    
+ 255: INSTR12<                        push:[v]>    3
+ 257: INSTR16<                         push:"">    
+ 258: INSTR68<                      append_str>    97(a)
+ 260: INSTR24<                     as_get_prop>    
+ 261: INSTR55<                            push>    1
+ 263: INSTR65<                    rec_get_prop>    
+ 264: INSTR57<                     do_get_prop>    
+ 265: INSTR34<                              ge>    
+ 266: INSTR9 <                             not>    
+ 267: INSTR32<                             jnz>    272(pos:272)
+ 269: INSTR37<                             pop>    
+ 270: INSTR17<                             jmp>    392(pos:392)
+ 272: INSTR12<                        push:[v]>    6
+ 274: INSTR58<                             dup>    
+ 275: INSTR48<        r.push(r[r.pop()[0]][0])>    
+ 276: INSTR16<                         push:"">    
+ 277: INSTR68<                      append_str>    66(B)
+ 279: INSTR68<                      append_str>    105(i)
+ 281: INSTR68<                      append_str>    103(g)
+ 283: INSTR68<                      append_str>    73(I)
+ 285: INSTR68<                      append_str>    110(n)
+ 287: INSTR68<                      append_str>    116(t)
+ 289: INSTR45<                             c[]>    
+ 290: INSTR16<                         push:"">    
+ 291: INSTR68<                      append_str>    50(2)
+ 293: INSTR68<                      append_str>    52(4)
+ 295: INSTR68<                      append_str>    55(7)
+ 297: INSTR68<                      append_str>    55(7)
+ 299: INSTR68<                      append_str>    54(6)
+ 301: INSTR68<                      append_str>    50(2)
+ 303: INSTR68<                      append_str>    55(7)
+ 305: INSTR52<                     call_n_args>    1
+ 307: INSTR44<                             mul>    
+ 308: INSTR41<                 set_stack:nopop>    
+ 309: INSTR31<                        swap_top>    0
+ 311: INSTR12<                        push:[v]>    6
+ 313: INSTR58<                             dup>    
+ 314: INSTR48<        r.push(r[r.pop()[0]][0])>    
+ 315: INSTR16<                         push:"">    
+ 316: INSTR68<                      append_str>    66(B)
+ 318: INSTR68<                      append_str>    105(i)
+ 320: INSTR68<                      append_str>    103(g)
+ 322: INSTR68<                      append_str>    73(I)
+ 324: INSTR68<                      append_str>    110(n)
+ 326: INSTR68<                      append_str>    116(t)
+ 328: INSTR45<                             c[]>    
+ 329: INSTR16<                         push:"">    
+ 330: INSTR68<                      append_str>    49(1)
+ 332: INSTR68<                      append_str>    49(1)
+ 334: INSTR68<                      append_str>    50(2)
+ 336: INSTR68<                      append_str>    53(5)
+ 338: INSTR68<                      append_str>    56(8)
+ 340: INSTR68<                      append_str>    57(9)
+ 342: INSTR68<                      append_str>    57(9)
+ 344: INSTR68<                      append_str>    57(9)
+ 346: INSTR68<                      append_str>    48(0)
+ 348: INSTR68<                      append_str>    54(6)
+ 350: INSTR68<                      append_str>    56(8)
+ 352: INSTR68<                      append_str>    52(4)
+ 354: INSTR68<                      append_str>    50(2)
+ 356: INSTR68<                      append_str>    53(5)
+ 358: INSTR68<                      append_str>    57(9)
+ 360: INSTR68<                      append_str>    55(7)
+ 362: INSTR52<                     call_n_args>    1
+ 364: INSTR15<                             mod>    
+ 365: INSTR41<                 set_stack:nopop>    
+ 366: INSTR31<                        swap_top>    0
+ 368: INSTR12<                        push:[v]>    5
+ 370: INSTR58<                             dup>    
+ 371: INSTR48<        r.push(r[r.pop()[0]][0])>    
+ 372: INSTR58<                             dup>    
+ 373: INSTR31<                        swap_top>    1
+ 375: INSTR31<                        swap_top>    0
+ 377: INSTR55<                            push>    1
+ 379: INSTR66<                             add>    
+ 380: INSTR41<                 set_stack:nopop>    
+ 381: INSTR37<                             pop>    
+ 382: INSTR13<                       mov:rsp,v>    0
+ 384: INSTR31<                        swap_top>    0
+ 386: INSTR0 <                             xor>    
+ 387: INSTR63<                   r.length -= v>    5
+ 389: INSTR37<                             pop>    
+ 390: INSTR17<                             jmp>    252(pos:252)
+ 392: INSTR12<                        push:[v]>    4
+ 394: INSTR58<                             dup>    
+ 395: INSTR48<        r.push(r[r.pop()[0]][0])>    
+ 396: INSTR53<                 r.push(r[v][0])>    6
+ 398: INSTR66<                             add>    
+ 399: INSTR41<                 set_stack:nopop>    
+ 400: INSTR31<                        swap_top>    0
+ 402: INSTR12<                        push:[v]>    4
+ 404: INSTR58<                             dup>    
+ 405: INSTR48<        r.push(r[r.pop()[0]][0])>    
+ 406: INSTR16<                         push:"">    
+ 407: INSTR68<                      append_str>    66(B)
+ 409: INSTR68<                      append_str>    105(i)
+ 411: INSTR68<                      append_str>    103(g)
+ 413: INSTR68<                      append_str>    73(I)
+ 415: INSTR68<                      append_str>    110(n)
+ 417: INSTR68<                      append_str>    116(t)
+ 419: INSTR45<                             c[]>    
+ 420: INSTR16<                         push:"">    
+ 421: INSTR68<                      append_str>    49(1)
+ 423: INSTR68<                      append_str>    49(1)
+ 425: INSTR68<                      append_str>    50(2)
+ 427: INSTR68<                      append_str>    53(5)
+ 429: INSTR68<                      append_str>    56(8)
+ 431: INSTR68<                      append_str>    57(9)
+ 433: INSTR68<                      append_str>    57(9)
+ 435: INSTR68<                      append_str>    57(9)
+ 437: INSTR68<                      append_str>    48(0)
+ 439: INSTR68<                      append_str>    54(6)
+ 441: INSTR68<                      append_str>    56(8)
+ 443: INSTR68<                      append_str>    52(4)
+ 445: INSTR68<                      append_str>    50(2)
+ 447: INSTR68<                      append_str>    53(5)
+ 449: INSTR68<                      append_str>    57(9)
+ 451: INSTR68<                      append_str>    55(7)
+ 453: INSTR52<                     call_n_args>    1
+ 455: INSTR15<                             mod>    
+ 456: INSTR41<                 set_stack:nopop>    
+ 457: INSTR31<                        swap_top>    0
+ 459: INSTR12<                        push:[v]>    5
+ 461: INSTR55<                            push>    0
+ 463: INSTR41<                 set_stack:nopop>    
+ 464: INSTR31<                        swap_top>    0
+ 466: INSTR12<                        push:[v]>    6
+ 468: INSTR16<                         push:"">    
+ 469: INSTR68<                      append_str>    66(B)
+ 471: INSTR68<                      append_str>    105(i)
+ 473: INSTR68<                      append_str>    103(g)
+ 475: INSTR68<                      append_str>    73(I)
+ 477: INSTR68<                      append_str>    110(n)
+ 479: INSTR68<                      append_str>    116(t)
+ 481: INSTR45<                             c[]>    
+ 482: INSTR55<                            push>    1
+ 484: INSTR52<                     call_n_args>    1
+ 486: INSTR41<                 set_stack:nopop>    
+ 487: INSTR31<                        swap_top>    0
+ 489: INSTR63<                   r.length -= v>    8
+ 491: INSTR12<                        push:[v]>    5
+ 493: INSTR48<        r.push(r[r.pop()[0]][0])>    
+ 494: INSTR12<                        push:[v]>    3
+ 496: INSTR16<                         push:"">    
+ 497: INSTR68<                      append_str>    97(a)
+ 499: INSTR24<                     as_get_prop>    
+ 500: INSTR55<                            push>    2
+ 502: INSTR65<                    rec_get_prop>    
+ 503: INSTR57<                     do_get_prop>    
+ 504: INSTR34<                              ge>    
+ 505: INSTR9 <                             not>    
+ 506: INSTR32<                             jnz>    511(pos:511)
+ 508: INSTR37<                             pop>    
+ 509: INSTR17<                             jmp>    631(pos:631)
+ 511: INSTR12<                        push:[v]>    6
+ 513: INSTR58<                             dup>    
+ 514: INSTR48<        r.push(r[r.pop()[0]][0])>    
+ 515: INSTR16<                         push:"">    
+ 516: INSTR68<                      append_str>    66(B)
+ 518: INSTR68<                      append_str>    105(i)
+ 520: INSTR68<                      append_str>    103(g)
+ 522: INSTR68<                      append_str>    73(I)
+ 524: INSTR68<                      append_str>    110(n)
+ 526: INSTR68<                      append_str>    116(t)
+ 528: INSTR45<                             c[]>    
+ 529: INSTR16<                         push:"">    
+ 530: INSTR68<                      append_str>    54(6)
+ 532: INSTR68<                      append_str>    56(8)
+ 534: INSTR68<                      append_str>    55(7)
+ 536: INSTR68<                      append_str>    56(8)
+ 538: INSTR68<                      append_str>    55(7)
+ 540: INSTR68<                      append_str>    57(9)
+ 542: INSTR68<                      append_str>    52(4)
+ 544: INSTR52<                     call_n_args>    1
+ 546: INSTR44<                             mul>    
+ 547: INSTR41<                 set_stack:nopop>    
+ 548: INSTR31<                        swap_top>    0
+ 550: INSTR12<                        push:[v]>    6
+ 552: INSTR58<                             dup>    
+ 553: INSTR48<        r.push(r[r.pop()[0]][0])>    
+ 554: INSTR16<                         push:"">    
+ 555: INSTR68<                      append_str>    66(B)
+ 557: INSTR68<                      append_str>    105(i)
+ 559: INSTR68<                      append_str>    103(g)
+ 561: INSTR68<                      append_str>    73(I)
+ 563: INSTR68<                      append_str>    110(n)
+ 565: INSTR68<                      append_str>    116(t)
+ 567: INSTR45<                             c[]>    
+ 568: INSTR16<                         push:"">    
+ 569: INSTR68<                      append_str>    49(1)
+ 571: INSTR68<                      append_str>    49(1)
+ 573: INSTR68<                      append_str>    50(2)
+ 575: INSTR68<                      append_str>    53(5)
+ 577: INSTR68<                      append_str>    56(8)
+ 579: INSTR68<                      append_str>    57(9)
+ 581: INSTR68<                      append_str>    57(9)
+ 583: INSTR68<                      append_str>    57(9)
+ 585: INSTR68<                      append_str>    48(0)
+ 587: INSTR68<                      append_str>    54(6)
+ 589: INSTR68<                      append_str>    56(8)
+ 591: INSTR68<                      append_str>    52(4)
+ 593: INSTR68<                      append_str>    50(2)
+ 595: INSTR68<                      append_str>    53(5)
+ 597: INSTR68<                      append_str>    57(9)
+ 599: INSTR68<                      append_str>    55(7)
+ 601: INSTR52<                     call_n_args>    1
+ 603: INSTR15<                             mod>    
+ 604: INSTR41<                 set_stack:nopop>    
+ 605: INSTR31<                        swap_top>    0
+ 607: INSTR12<                        push:[v]>    5
+ 609: INSTR58<                             dup>    
+ 610: INSTR48<        r.push(r[r.pop()[0]][0])>    
+ 611: INSTR58<                             dup>    
+ 612: INSTR31<                        swap_top>    1
+ 614: INSTR31<                        swap_top>    0
+ 616: INSTR55<                            push>    1
+ 618: INSTR66<                             add>    
+ 619: INSTR41<                 set_stack:nopop>    
+ 620: INSTR37<                             pop>    
+ 621: INSTR13<                       mov:rsp,v>    0
+ 623: INSTR31<                        swap_top>    0
+ 625: INSTR0 <                             xor>    
+ 626: INSTR63<                   r.length -= v>    5
+ 628: INSTR37<                             pop>    
+ 629: INSTR17<                             jmp>    491(pos:491)
+ 631: INSTR12<                        push:[v]>    5
+ 633: INSTR55<                            push>    0
+ 635: INSTR41<                 set_stack:nopop>    
+ 636: INSTR31<                        swap_top>    0
+ 638: INSTR37<                             pop>    
+ 639: INSTR37<                             pop>    
+ 640: INSTR12<                        push:[v]>    5
+ 642: INSTR48<        r.push(r[r.pop()[0]][0])>    
+ 643: INSTR12<                        push:[v]>    3
+ 645: INSTR16<                         push:"">    
+ 646: INSTR68<                      append_str>    97(a)
+ 648: INSTR24<                     as_get_prop>    
+ 649: INSTR55<                            push>    3
+ 651: INSTR65<                    rec_get_prop>    
+ 652: INSTR57<                     do_get_prop>    
+ 653: INSTR34<                              ge>    
+ 654: INSTR9 <                             not>    
+ 655: INSTR32<                             jnz>    660(pos:660)
+ 657: INSTR37<                             pop>    
+ 658: INSTR17<                             jmp>    780(pos:780)
+ 660: INSTR12<                        push:[v]>    6
+ 662: INSTR58<                             dup>    
+ 663: INSTR48<        r.push(r[r.pop()[0]][0])>    
+ 664: INSTR16<                         push:"">    
+ 665: INSTR68<                      append_str>    66(B)
+ 667: INSTR68<                      append_str>    105(i)
+ 669: INSTR68<                      append_str>    103(g)
+ 671: INSTR68<                      append_str>    73(I)
+ 673: INSTR68<                      append_str>    110(n)
+ 675: INSTR68<                      append_str>    116(t)
+ 677: INSTR45<                             c[]>    
+ 678: INSTR16<                         push:"">    
+ 679: INSTR68<                      append_str>    55(7)
+ 681: INSTR68<                      append_str>    53(5)
+ 683: INSTR68<                      append_str>    52(4)
+ 685: INSTR68<                      append_str>    54(6)
+ 687: INSTR68<                      append_str>    51(3)
+ 689: INSTR68<                      append_str>    54(6)
+ 691: INSTR68<                      append_str>    52(4)
+ 693: INSTR52<                     call_n_args>    1
+ 695: INSTR44<                             mul>    
+ 696: INSTR41<                 set_stack:nopop>    
+ 697: INSTR31<                        swap_top>    0
+ 699: INSTR12<                        push:[v]>    6
+ 701: INSTR58<                             dup>    
+ 702: INSTR48<        r.push(r[r.pop()[0]][0])>    
+ 703: INSTR16<                         push:"">    
+ 704: INSTR68<                      append_str>    66(B)
+ 706: INSTR68<                      append_str>    105(i)
+ 708: INSTR68<                      append_str>    103(g)
+ 710: INSTR68<                      append_str>    73(I)
+ 712: INSTR68<                      append_str>    110(n)
+ 714: INSTR68<                      append_str>    116(t)
+ 716: INSTR45<                             c[]>    
+ 717: INSTR16<                         push:"">    
+ 718: INSTR68<                      append_str>    49(1)
+ 720: INSTR68<                      append_str>    49(1)
+ 722: INSTR68<                      append_str>    50(2)
+ 724: INSTR68<                      append_str>    53(5)
+ 726: INSTR68<                      append_str>    56(8)
+ 728: INSTR68<                      append_str>    57(9)
+ 730: INSTR68<                      append_str>    57(9)
+ 732: INSTR68<                      append_str>    57(9)
+ 734: INSTR68<                      append_str>    48(0)
+ 736: INSTR68<                      append_str>    54(6)
+ 738: INSTR68<                      append_str>    56(8)
+ 740: INSTR68<                      append_str>    52(4)
+ 742: INSTR68<                      append_str>    50(2)
+ 744: INSTR68<                      append_str>    53(5)
+ 746: INSTR68<                      append_str>    57(9)
+ 748: INSTR68<                      append_str>    55(7)
+ 750: INSTR52<                     call_n_args>    1
+ 752: INSTR15<                             mod>    
+ 753: INSTR41<                 set_stack:nopop>    
+ 754: INSTR31<                        swap_top>    0
+ 756: INSTR12<                        push:[v]>    5
+ 758: INSTR58<                             dup>    
+ 759: INSTR48<        r.push(r[r.pop()[0]][0])>    
+ 760: INSTR58<                             dup>    
+ 761: INSTR31<                        swap_top>    1
+ 763: INSTR31<                        swap_top>    0
+ 765: INSTR55<                            push>    1
+ 767: INSTR66<                             add>    
+ 768: INSTR41<                 set_stack:nopop>    
+ 769: INSTR37<                             pop>    
+ 770: INSTR13<                       mov:rsp,v>    0
+ 772: INSTR31<                        swap_top>    0
+ 774: INSTR0 <                             xor>    
+ 775: INSTR63<                   r.length -= v>    5
+ 777: INSTR37<                             pop>    
+ 778: INSTR17<                             jmp>    640(pos:640)
+ 780: INSTR12<                        push:[v]>    4
+ 782: INSTR58<                             dup>    
+ 783: INSTR48<        r.push(r[r.pop()[0]][0])>    
+ 784: INSTR53<                 r.push(r[v][0])>    6
+ 786: INSTR66<                             add>    
+ 787: INSTR41<                 set_stack:nopop>    
+ 788: INSTR31<                        swap_top>    0
+ 790: INSTR12<                        push:[v]>    4
+ 792: INSTR58<                             dup>    
+ 793: INSTR48<        r.push(r[r.pop()[0]][0])>    
+ 794: INSTR16<                         push:"">    
+ 795: INSTR68<                      append_str>    66(B)
+ 797: INSTR68<                      append_str>    105(i)
+ 799: INSTR68<                      append_str>    103(g)
+ 801: INSTR68<                      append_str>    73(I)
+ 803: INSTR68<                      append_str>    110(n)
+ 805: INSTR68<                      append_str>    116(t)
+ 807: INSTR45<                             c[]>    
+ 808: INSTR16<                         push:"">    
+ 809: INSTR68<                      append_str>    49(1)
+ 811: INSTR68<                      append_str>    49(1)
+ 813: INSTR68<                      append_str>    50(2)
+ 815: INSTR68<                      append_str>    53(5)
+ 817: INSTR68<                      append_str>    56(8)
+ 819: INSTR68<                      append_str>    57(9)
+ 821: INSTR68<                      append_str>    57(9)
+ 823: INSTR68<                      append_str>    57(9)
+ 825: INSTR68<                      append_str>    48(0)
+ 827: INSTR68<                      append_str>    54(6)
+ 829: INSTR68<                      append_str>    56(8)
+ 831: INSTR68<                      append_str>    52(4)
+ 833: INSTR68<                      append_str>    50(2)
+ 835: INSTR68<                      append_str>    53(5)
+ 837: INSTR68<                      append_str>    57(9)
+ 839: INSTR68<                      append_str>    55(7)
+ 841: INSTR52<                     call_n_args>    1
+ 843: INSTR15<                             mod>    
+ 844: INSTR41<                 set_stack:nopop>    
+ 845: INSTR31<                        swap_top>    0
+ 847: INSTR12<                        push:[v]>    5
+ 849: INSTR55<                            push>    0
+ 851: INSTR41<                 set_stack:nopop>    
+ 852: INSTR31<                        swap_top>    0
+ 854: INSTR12<                        push:[v]>    6
+ 856: INSTR16<                         push:"">    
+ 857: INSTR68<                      append_str>    66(B)
+ 859: INSTR68<                      append_str>    105(i)
+ 861: INSTR68<                      append_str>    103(g)
+ 863: INSTR68<                      append_str>    73(I)
+ 865: INSTR68<                      append_str>    110(n)
+ 867: INSTR68<                      append_str>    116(t)
+ 869: INSTR45<                             c[]>    
+ 870: INSTR55<                            push>    1
+ 872: INSTR52<                     call_n_args>    1
+ 874: INSTR41<                 set_stack:nopop>    
+ 875: INSTR31<                        swap_top>    0
+ 877: INSTR63<                   r.length -= v>    8
+ 879: INSTR12<                        push:[v]>    5
+ 881: INSTR48<        r.push(r[r.pop()[0]][0])>    
+ 882: INSTR12<                        push:[v]>    3
+ 884: INSTR16<                         push:"">    
+ 885: INSTR68<                      append_str>    97(a)
+ 887: INSTR24<                     as_get_prop>    
+ 888: INSTR55<                            push>    4
+ 890: INSTR65<                    rec_get_prop>    
+ 891: INSTR57<                     do_get_prop>    
+ 892: INSTR34<                              ge>    
+ 893: INSTR9 <                             not>    
+ 894: INSTR32<                             jnz>    899(pos:899)
+ 896: INSTR37<                             pop>    
+ 897: INSTR17<                             jmp>    1019(pos:1019)
+ 899: INSTR12<                        push:[v]>    6
+ 901: INSTR58<                             dup>    
+ 902: INSTR48<        r.push(r[r.pop()[0]][0])>    
+ 903: INSTR16<                         push:"">    
+ 904: INSTR68<                      append_str>    66(B)
+ 906: INSTR68<                      append_str>    105(i)
+ 908: INSTR68<                      append_str>    103(g)
+ 910: INSTR68<                      append_str>    73(I)
+ 912: INSTR68<                      append_str>    110(n)
+ 914: INSTR68<                      append_str>    116(t)
+ 916: INSTR45<                             c[]>    
+ 917: INSTR16<                         push:"">    
+ 918: INSTR68<                      append_str>    50(2)
+ 920: INSTR68<                      append_str>    57(9)
+ 922: INSTR68<                      append_str>    57(9)
+ 924: INSTR68<                      append_str>    49(1)
+ 926: INSTR68<                      append_str>    57(9)
+ 928: INSTR68<                      append_str>    49(1)
+ 930: INSTR68<                      append_str>    57(9)
+ 932: INSTR52<                     call_n_args>    1
+ 934: INSTR44<                             mul>    
+ 935: INSTR41<                 set_stack:nopop>    
+ 936: INSTR31<                        swap_top>    0
+ 938: INSTR12<                        push:[v]>    6
+ 940: INSTR58<                             dup>    
+ 941: INSTR48<        r.push(r[r.pop()[0]][0])>    
+ 942: INSTR16<                         push:"">    
+ 943: INSTR68<                      append_str>    66(B)
+ 945: INSTR68<                      append_str>    105(i)
+ 947: INSTR68<                      append_str>    103(g)
+ 949: INSTR68<                      append_str>    73(I)
+ 951: INSTR68<                      append_str>    110(n)
+ 953: INSTR68<                      append_str>    116(t)
+ 955: INSTR45<                             c[]>    
+ 956: INSTR16<                         push:"">    
+ 957: INSTR68<                      append_str>    49(1)
+ 959: INSTR68<                      append_str>    49(1)
+ 961: INSTR68<                      append_str>    50(2)
+ 963: INSTR68<                      append_str>    53(5)
+ 965: INSTR68<                      append_str>    56(8)
+ 967: INSTR68<                      append_str>    57(9)
+ 969: INSTR68<                      append_str>    57(9)
+ 971: INSTR68<                      append_str>    57(9)
+ 973: INSTR68<                      append_str>    48(0)
+ 975: INSTR68<                      append_str>    54(6)
+ 977: INSTR68<                      append_str>    56(8)
+ 979: INSTR68<                      append_str>    52(4)
+ 981: INSTR68<                      append_str>    50(2)
+ 983: INSTR68<                      append_str>    53(5)
+ 985: INSTR68<                      append_str>    57(9)
+ 987: INSTR68<                      append_str>    55(7)
+ 989: INSTR52<                     call_n_args>    1
+ 991: INSTR15<                             mod>    
+ 992: INSTR41<                 set_stack:nopop>    
+ 993: INSTR31<                        swap_top>    0
+ 995: INSTR12<                        push:[v]>    5
+ 997: INSTR58<                             dup>    
+ 998: INSTR48<        r.push(r[r.pop()[0]][0])>    
+ 999: INSTR58<                             dup>    
+1000: INSTR31<                        swap_top>    1
+1002: INSTR31<                        swap_top>    0
+1004: INSTR55<                            push>    1
+1006: INSTR66<                             add>    
+1007: INSTR41<                 set_stack:nopop>    
+1008: INSTR37<                             pop>    
+1009: INSTR13<                       mov:rsp,v>    0
+1011: INSTR31<                        swap_top>    0
+1013: INSTR0 <                             xor>    
+1014: INSTR63<                   r.length -= v>    5
+1016: INSTR37<                             pop>    
+1017: INSTR17<                             jmp>    879(pos:879)
+1019: INSTR12<                        push:[v]>    5
+1021: INSTR55<                            push>    0
+1023: INSTR41<                 set_stack:nopop>    
+1024: INSTR31<                        swap_top>    0
+1026: INSTR37<                             pop>    
+1027: INSTR37<                             pop>    
+1028: INSTR12<                        push:[v]>    5
+1030: INSTR48<        r.push(r[r.pop()[0]][0])>    
+1031: INSTR12<                        push:[v]>    3
+1033: INSTR16<                         push:"">    
+1034: INSTR68<                      append_str>    97(a)
+1036: INSTR24<                     as_get_prop>    
+1037: INSTR55<                            push>    5
+1039: INSTR65<                    rec_get_prop>    
+1040: INSTR57<                     do_get_prop>    
+1041: INSTR34<                              ge>    
+1042: INSTR9 <                             not>    
+1043: INSTR32<                             jnz>    1048(pos:1048)
+1045: INSTR37<                             pop>    
+1046: INSTR17<                             jmp>    1168(pos:1168)
+1048: INSTR12<                        push:[v]>    6
+1050: INSTR58<                             dup>    
+1051: INSTR48<        r.push(r[r.pop()[0]][0])>    
+1052: INSTR16<                         push:"">    
+1053: INSTR68<                      append_str>    66(B)
+1055: INSTR68<                      append_str>    105(i)
+1057: INSTR68<                      append_str>    103(g)
+1059: INSTR68<                      append_str>    73(I)
+1061: INSTR68<                      append_str>    110(n)
+1063: INSTR68<                      append_str>    116(t)
+1065: INSTR45<                             c[]>    
+1066: INSTR16<                         push:"">    
+1067: INSTR68<                      append_str>    50(2)
+1069: INSTR68<                      append_str>    49(1)
+1071: INSTR68<                      append_str>    56(8)
+1073: INSTR68<                      append_str>    50(2)
+1075: INSTR68<                      append_str>    54(6)
+1077: INSTR68<                      append_str>    52(4)
+1079: INSTR68<                      append_str>    51(3)
+1081: INSTR52<                     call_n_args>    1
+1083: INSTR44<                             mul>    
+1084: INSTR41<                 set_stack:nopop>    
+1085: INSTR31<                        swap_top>    0
+1087: INSTR12<                        push:[v]>    6
+1089: INSTR58<                             dup>    
+1090: INSTR48<        r.push(r[r.pop()[0]][0])>    
+1091: INSTR16<                         push:"">    
+1092: INSTR68<                      append_str>    66(B)
+1094: INSTR68<                      append_str>    105(i)
+1096: INSTR68<                      append_str>    103(g)
+1098: INSTR68<                      append_str>    73(I)
+1100: INSTR68<                      append_str>    110(n)
+1102: INSTR68<                      append_str>    116(t)
+1104: INSTR45<                             c[]>    
+1105: INSTR16<                         push:"">    
+1106: INSTR68<                      append_str>    49(1)
+1108: INSTR68<                      append_str>    49(1)
+1110: INSTR68<                      append_str>    50(2)
+1112: INSTR68<                      append_str>    53(5)
+1114: INSTR68<                      append_str>    56(8)
+1116: INSTR68<                      append_str>    57(9)
+1118: INSTR68<                      append_str>    57(9)
+1120: INSTR68<                      append_str>    57(9)
+1122: INSTR68<                      append_str>    48(0)
+1124: INSTR68<                      append_str>    54(6)
+1126: INSTR68<                      append_str>    56(8)
+1128: INSTR68<                      append_str>    52(4)
+1130: INSTR68<                      append_str>    50(2)
+1132: INSTR68<                      append_str>    53(5)
+1134: INSTR68<                      append_str>    57(9)
+1136: INSTR68<                      append_str>    55(7)
+1138: INSTR52<                     call_n_args>    1
+1140: INSTR15<                             mod>    
+1141: INSTR41<                 set_stack:nopop>    
+1142: INSTR31<                        swap_top>    0
+1144: INSTR12<                        push:[v]>    5
+1146: INSTR58<                             dup>    
+1147: INSTR48<        r.push(r[r.pop()[0]][0])>    
+1148: INSTR58<                             dup>    
+1149: INSTR31<                        swap_top>    1
+1151: INSTR31<                        swap_top>    0
+1153: INSTR55<                            push>    1
+1155: INSTR66<                             add>    
+1156: INSTR41<                 set_stack:nopop>    
+1157: INSTR37<                             pop>    
+1158: INSTR13<                       mov:rsp,v>    0
+1160: INSTR31<                        swap_top>    0
+1162: INSTR0 <                             xor>    
+1163: INSTR63<                   r.length -= v>    5
+1165: INSTR37<                             pop>    
+1166: INSTR17<                             jmp>    1028(pos:1028)
+1168: INSTR12<                        push:[v]>    4
+1170: INSTR58<                             dup>    
+1171: INSTR48<        r.push(r[r.pop()[0]][0])>    
+1172: INSTR53<                 r.push(r[v][0])>    6
+1174: INSTR66<                             add>    
+1175: INSTR41<                 set_stack:nopop>    
+1176: INSTR31<                        swap_top>    0
+1178: INSTR12<                        push:[v]>    4
+1180: INSTR58<                             dup>    
+1181: INSTR48<        r.push(r[r.pop()[0]][0])>    
+1182: INSTR16<                         push:"">    
+1183: INSTR68<                      append_str>    66(B)
+1185: INSTR68<                      append_str>    105(i)
+1187: INSTR68<                      append_str>    103(g)
+1189: INSTR68<                      append_str>    73(I)
+1191: INSTR68<                      append_str>    110(n)
+1193: INSTR68<                      append_str>    116(t)
+1195: INSTR45<                             c[]>    
+1196: INSTR16<                         push:"">    
+1197: INSTR68<                      append_str>    49(1)
+1199: INSTR68<                      append_str>    49(1)
+1201: INSTR68<                      append_str>    50(2)
+1203: INSTR68<                      append_str>    53(5)
+1205: INSTR68<                      append_str>    56(8)
+1207: INSTR68<                      append_str>    57(9)
+1209: INSTR68<                      append_str>    57(9)
+1211: INSTR68<                      append_str>    57(9)
+1213: INSTR68<                      append_str>    48(0)
+1215: INSTR68<                      append_str>    54(6)
+1217: INSTR68<                      append_str>    56(8)
+1219: INSTR68<                      append_str>    52(4)
+1221: INSTR68<                      append_str>    50(2)
+1223: INSTR68<                      append_str>    53(5)
+1225: INSTR68<                      append_str>    57(9)
+1227: INSTR68<                      append_str>    55(7)
+1229: INSTR52<                     call_n_args>    1
+1231: INSTR15<                             mod>    
+1232: INSTR41<                 set_stack:nopop>    
+1233: INSTR31<                        swap_top>    0
+1235: INSTR12<                        push:[v]>    5
+1237: INSTR55<                            push>    0
+1239: INSTR41<                 set_stack:nopop>    
+1240: INSTR31<                        swap_top>    0
+1242: INSTR12<                        push:[v]>    6
+1244: INSTR16<                         push:"">    
+1245: INSTR68<                      append_str>    66(B)
+1247: INSTR68<                      append_str>    105(i)
+1249: INSTR68<                      append_str>    103(g)
+1251: INSTR68<                      append_str>    73(I)
+1253: INSTR68<                      append_str>    110(n)
+1255: INSTR68<                      append_str>    116(t)
+1257: INSTR45<                             c[]>    
+1258: INSTR55<                            push>    1
+1260: INSTR52<                     call_n_args>    1
+1262: INSTR41<                 set_stack:nopop>    
+1263: INSTR31<                        swap_top>    0
+1265: INSTR63<                   r.length -= v>    8
+1267: INSTR12<                        push:[v]>    5
+1269: INSTR48<        r.push(r[r.pop()[0]][0])>    
+1270: INSTR12<                        push:[v]>    3
+1272: INSTR16<                         push:"">    
+1273: INSTR68<                      append_str>    97(a)
+1275: INSTR24<                     as_get_prop>    
+1276: INSTR55<                            push>    6
+1278: INSTR65<                    rec_get_prop>    
+1279: INSTR57<                     do_get_prop>    
+1280: INSTR34<                              ge>    
+1281: INSTR9 <                             not>    
+1282: INSTR32<                             jnz>    1287(pos:1287)
+1284: INSTR37<                             pop>    
+1285: INSTR17<                             jmp>    1407(pos:1407)
+1287: INSTR12<                        push:[v]>    6
+1289: INSTR58<                             dup>    
+1290: INSTR48<        r.push(r[r.pop()[0]][0])>    
+1291: INSTR16<                         push:"">    
+1292: INSTR68<                      append_str>    66(B)
+1294: INSTR68<                      append_str>    105(i)
+1296: INSTR68<                      append_str>    103(g)
+1298: INSTR68<                      append_str>    73(I)
+1300: INSTR68<                      append_str>    110(n)
+1302: INSTR68<                      append_str>    116(t)
+1304: INSTR45<                             c[]>    
+1305: INSTR16<                         push:"">    
+1306: INSTR68<                      append_str>    55(7)
+1308: INSTR68<                      append_str>    57(9)
+1310: INSTR68<                      append_str>    51(3)
+1312: INSTR68<                      append_str>    48(0)
+1314: INSTR68<                      append_str>    48(0)
+1316: INSTR68<                      append_str>    57(9)
+1318: INSTR68<                      append_str>    52(4)
+1320: INSTR52<                     call_n_args>    1
+1322: INSTR44<                             mul>    
+1323: INSTR41<                 set_stack:nopop>    
+1324: INSTR31<                        swap_top>    0
+1326: INSTR12<                        push:[v]>    6
+1328: INSTR58<                             dup>    
+1329: INSTR48<        r.push(r[r.pop()[0]][0])>    
+1330: INSTR16<                         push:"">    
+1331: INSTR68<                      append_str>    66(B)
+1333: INSTR68<                      append_str>    105(i)
+1335: INSTR68<                      append_str>    103(g)
+1337: INSTR68<                      append_str>    73(I)
+1339: INSTR68<                      append_str>    110(n)
+1341: INSTR68<                      append_str>    116(t)
+1343: INSTR45<                             c[]>    
+1344: INSTR16<                         push:"">    
+1345: INSTR68<                      append_str>    49(1)
+1347: INSTR68<                      append_str>    49(1)
+1349: INSTR68<                      append_str>    50(2)
+1351: INSTR68<                      append_str>    53(5)
+1353: INSTR68<                      append_str>    56(8)
+1355: INSTR68<                      append_str>    57(9)
+1357: INSTR68<                      append_str>    57(9)
+1359: INSTR68<                      append_str>    57(9)
+1361: INSTR68<                      append_str>    48(0)
+1363: INSTR68<                      append_str>    54(6)
+1365: INSTR68<                      append_str>    56(8)
+1367: INSTR68<                      append_str>    52(4)
+1369: INSTR68<                      append_str>    50(2)
+1371: INSTR68<                      append_str>    53(5)
+1373: INSTR68<                      append_str>    57(9)
+1375: INSTR68<                      append_str>    55(7)
+1377: INSTR52<                     call_n_args>    1
+1379: INSTR15<                             mod>    
+1380: INSTR41<                 set_stack:nopop>    
+1381: INSTR31<                        swap_top>    0
+1383: INSTR12<                        push:[v]>    5
+1385: INSTR58<                             dup>    
+1386: INSTR48<        r.push(r[r.pop()[0]][0])>    
+1387: INSTR58<                             dup>    
+1388: INSTR31<                        swap_top>    1
+1390: INSTR31<                        swap_top>    0
+1392: INSTR55<                            push>    1
+1394: INSTR66<                             add>    
+1395: INSTR41<                 set_stack:nopop>    
+1396: INSTR37<                             pop>    
+1397: INSTR13<                       mov:rsp,v>    0
+1399: INSTR31<                        swap_top>    0
+1401: INSTR0 <                             xor>    
+1402: INSTR63<                   r.length -= v>    5
+1404: INSTR37<                             pop>    
+1405: INSTR17<                             jmp>    1267(pos:1267)
+1407: INSTR12<                        push:[v]>    5
+1409: INSTR55<                            push>    0
+1411: INSTR41<                 set_stack:nopop>    
+1412: INSTR31<                        swap_top>    0
+1414: INSTR37<                             pop>    
+1415: INSTR37<                             pop>    
+1416: INSTR12<                        push:[v]>    5
+1418: INSTR48<        r.push(r[r.pop()[0]][0])>    
+1419: INSTR12<                        push:[v]>    3
+1421: INSTR16<                         push:"">    
+1422: INSTR68<                      append_str>    97(a)
+1424: INSTR24<                     as_get_prop>    
+1425: INSTR55<                            push>    7
+1427: INSTR65<                    rec_get_prop>    
+1428: INSTR57<                     do_get_prop>    
+1429: INSTR34<                              ge>    
+1430: INSTR9 <                             not>    
+1431: INSTR32<                             jnz>    1436(pos:1436)
+1433: INSTR37<                             pop>    
+1434: INSTR17<                             jmp>    1556(pos:1556)
+1436: INSTR12<                        push:[v]>    6
+1438: INSTR58<                             dup>    
+1439: INSTR48<        r.push(r[r.pop()[0]][0])>    
+1440: INSTR16<                         push:"">    
+1441: INSTR68<                      append_str>    66(B)
+1443: INSTR68<                      append_str>    105(i)
+1445: INSTR68<                      append_str>    103(g)
+1447: INSTR68<                      append_str>    73(I)
+1449: INSTR68<                      append_str>    110(n)
+1451: INSTR68<                      append_str>    116(t)
+1453: INSTR45<                             c[]>    
+1454: INSTR16<                         push:"">    
+1455: INSTR68<                      append_str>    49(1)
+1457: INSTR68<                      append_str>    52(4)
+1459: INSTR68<                      append_str>    52(4)
+1461: INSTR68<                      append_str>    52(4)
+1463: INSTR68<                      append_str>    56(8)
+1465: INSTR68<                      append_str>    54(6)
+1467: INSTR68<                      append_str>    49(1)
+1469: INSTR52<                     call_n_args>    1
+1471: INSTR44<                             mul>    
+1472: INSTR41<                 set_stack:nopop>    
+1473: INSTR31<                        swap_top>    0
+1475: INSTR12<                        push:[v]>    6
+1477: INSTR58<                             dup>    
+1478: INSTR48<        r.push(r[r.pop()[0]][0])>    
+1479: INSTR16<                         push:"">    
+1480: INSTR68<                      append_str>    66(B)
+1482: INSTR68<                      append_str>    105(i)
+1484: INSTR68<                      append_str>    103(g)
+1486: INSTR68<                      append_str>    73(I)
+1488: INSTR68<                      append_str>    110(n)
+1490: INSTR68<                      append_str>    116(t)
+1492: INSTR45<                             c[]>    
+1493: INSTR16<                         push:"">    
+1494: INSTR68<                      append_str>    49(1)
+1496: INSTR68<                      append_str>    49(1)
+1498: INSTR68<                      append_str>    50(2)
+1500: INSTR68<                      append_str>    53(5)
+1502: INSTR68<                      append_str>    56(8)
+1504: INSTR68<                      append_str>    57(9)
+1506: INSTR68<                      append_str>    57(9)
+1508: INSTR68<                      append_str>    57(9)
+1510: INSTR68<                      append_str>    48(0)
+1512: INSTR68<                      append_str>    54(6)
+1514: INSTR68<                      append_str>    56(8)
+1516: INSTR68<                      append_str>    52(4)
+1518: INSTR68<                      append_str>    50(2)
+1520: INSTR68<                      append_str>    53(5)
+1522: INSTR68<                      append_str>    57(9)
+1524: INSTR68<                      append_str>    55(7)
+1526: INSTR52<                     call_n_args>    1
+1528: INSTR15<                             mod>    
+1529: INSTR41<                 set_stack:nopop>    
+1530: INSTR31<                        swap_top>    0
+1532: INSTR12<                        push:[v]>    5
+1534: INSTR58<                             dup>    
+1535: INSTR48<        r.push(r[r.pop()[0]][0])>    
+1536: INSTR58<                             dup>    
+1537: INSTR31<                        swap_top>    1
+1539: INSTR31<                        swap_top>    0
+1541: INSTR55<                            push>    1
+1543: INSTR66<                             add>    
+1544: INSTR41<                 set_stack:nopop>    
+1545: INSTR37<                             pop>    
+1546: INSTR13<                       mov:rsp,v>    0
+1548: INSTR31<                        swap_top>    0
+1550: INSTR0 <                             xor>    
+1551: INSTR63<                   r.length -= v>    5
+1553: INSTR37<                             pop>    
+1554: INSTR17<                             jmp>    1416(pos:1416)
+1556: INSTR12<                        push:[v]>    4
+1558: INSTR58<                             dup>    
+1559: INSTR48<        r.push(r[r.pop()[0]][0])>    
+1560: INSTR53<                 r.push(r[v][0])>    6
+1562: INSTR66<                             add>    
+1563: INSTR41<                 set_stack:nopop>    
+1564: INSTR31<                        swap_top>    0
+1566: INSTR12<                        push:[v]>    4
+1568: INSTR58<                             dup>    
+1569: INSTR48<        r.push(r[r.pop()[0]][0])>    
+1570: INSTR16<                         push:"">    
+1571: INSTR68<                      append_str>    66(B)
+1573: INSTR68<                      append_str>    105(i)
+1575: INSTR68<                      append_str>    103(g)
+1577: INSTR68<                      append_str>    73(I)
+1579: INSTR68<                      append_str>    110(n)
+1581: INSTR68<                      append_str>    116(t)
+1583: INSTR45<                             c[]>    
+1584: INSTR16<                         push:"">    
+1585: INSTR68<                      append_str>    49(1)
+1587: INSTR68<                      append_str>    49(1)
+1589: INSTR68<                      append_str>    50(2)
+1591: INSTR68<                      append_str>    53(5)
+1593: INSTR68<                      append_str>    56(8)
+1595: INSTR68<                      append_str>    57(9)
+1597: INSTR68<                      append_str>    57(9)
+1599: INSTR68<                      append_str>    57(9)
+1601: INSTR68<                      append_str>    48(0)
+1603: INSTR68<                      append_str>    54(6)
+1605: INSTR68<                      append_str>    56(8)
+1607: INSTR68<                      append_str>    52(4)
+1609: INSTR68<                      append_str>    50(2)
+1611: INSTR68<                      append_str>    53(5)
+1613: INSTR68<                      append_str>    57(9)
+1615: INSTR68<                      append_str>    55(7)
+1617: INSTR52<                     call_n_args>    1
+1619: INSTR15<                             mod>    
+1620: INSTR41<                 set_stack:nopop>    
+1621: INSTR31<                        swap_top>    0
+1623: INSTR12<                        push:[v]>    5
+1625: INSTR55<                            push>    0
+1627: INSTR41<                 set_stack:nopop>    
+1628: INSTR31<                        swap_top>    0
+1630: INSTR12<                        push:[v]>    6
+1632: INSTR16<                         push:"">    
+1633: INSTR68<                      append_str>    66(B)
+1635: INSTR68<                      append_str>    105(i)
+1637: INSTR68<                      append_str>    103(g)
+1639: INSTR68<                      append_str>    73(I)
+1641: INSTR68<                      append_str>    110(n)
+1643: INSTR68<                      append_str>    116(t)
+1645: INSTR45<                             c[]>    
+1646: INSTR55<                            push>    1
+1648: INSTR52<                     call_n_args>    1
+1650: INSTR41<                 set_stack:nopop>    
+1651: INSTR31<                        swap_top>    0
+1653: INSTR63<                   r.length -= v>    8
+1655: INSTR12<                        push:[v]>    5
+1657: INSTR48<        r.push(r[r.pop()[0]][0])>    
+1658: INSTR12<                        push:[v]>    3
+1660: INSTR16<                         push:"">    
+1661: INSTR68<                      append_str>    97(a)
+1663: INSTR24<                     as_get_prop>    
+1664: INSTR55<                            push>    8
+1666: INSTR65<                    rec_get_prop>    
+1667: INSTR57<                     do_get_prop>    
+1668: INSTR34<                              ge>    
+1669: INSTR9 <                             not>    
+1670: INSTR32<                             jnz>    1675(pos:1675)
+1672: INSTR37<                             pop>    
+1673: INSTR17<                             jmp>    1795(pos:1795)
+1675: INSTR12<                        push:[v]>    6
+1677: INSTR58<                             dup>    
+1678: INSTR48<        r.push(r[r.pop()[0]][0])>    
+1679: INSTR16<                         push:"">    
+1680: INSTR68<                      append_str>    66(B)
+1682: INSTR68<                      append_str>    105(i)
+1684: INSTR68<                      append_str>    103(g)
+1686: INSTR68<                      append_str>    73(I)
+1688: INSTR68<                      append_str>    110(n)
+1690: INSTR68<                      append_str>    116(t)
+1692: INSTR45<                             c[]>    
+1693: INSTR16<                         push:"">    
+1694: INSTR68<                      append_str>    53(5)
+1696: INSTR68<                      append_str>    53(5)
+1698: INSTR68<                      append_str>    57(9)
+1700: INSTR68<                      append_str>    54(6)
+1702: INSTR68<                      append_str>    48(0)
+1704: INSTR68<                      append_str>    50(2)
+1706: INSTR68<                      append_str>    52(4)
+1708: INSTR52<                     call_n_args>    1
+1710: INSTR44<                             mul>    
+1711: INSTR41<                 set_stack:nopop>    
+1712: INSTR31<                        swap_top>    0
+1714: INSTR12<                        push:[v]>    6
+1716: INSTR58<                             dup>    
+1717: INSTR48<        r.push(r[r.pop()[0]][0])>    
+1718: INSTR16<                         push:"">    
+1719: INSTR68<                      append_str>    66(B)
+1721: INSTR68<                      append_str>    105(i)
+1723: INSTR68<                      append_str>    103(g)
+1725: INSTR68<                      append_str>    73(I)
+1727: INSTR68<                      append_str>    110(n)
+1729: INSTR68<                      append_str>    116(t)
+1731: INSTR45<                             c[]>    
+1732: INSTR16<                         push:"">    
+1733: INSTR68<                      append_str>    49(1)
+1735: INSTR68<                      append_str>    49(1)
+1737: INSTR68<                      append_str>    50(2)
+1739: INSTR68<                      append_str>    53(5)
+1741: INSTR68<                      append_str>    56(8)
+1743: INSTR68<                      append_str>    57(9)
+1745: INSTR68<                      append_str>    57(9)
+1747: INSTR68<                      append_str>    57(9)
+1749: INSTR68<                      append_str>    48(0)
+1751: INSTR68<                      append_str>    54(6)
+1753: INSTR68<                      append_str>    56(8)
+1755: INSTR68<                      append_str>    52(4)
+1757: INSTR68<                      append_str>    50(2)
+1759: INSTR68<                      append_str>    53(5)
+1761: INSTR68<                      append_str>    57(9)
+1763: INSTR68<                      append_str>    55(7)
+1765: INSTR52<                     call_n_args>    1
+1767: INSTR15<                             mod>    
+1768: INSTR41<                 set_stack:nopop>    
+1769: INSTR31<                        swap_top>    0
+1771: INSTR12<                        push:[v]>    5
+1773: INSTR58<                             dup>    
+1774: INSTR48<        r.push(r[r.pop()[0]][0])>    
+1775: INSTR58<                             dup>    
+1776: INSTR31<                        swap_top>    1
+1778: INSTR31<                        swap_top>    0
+1780: INSTR55<                            push>    1
+1782: INSTR66<                             add>    
+1783: INSTR41<                 set_stack:nopop>    
+1784: INSTR37<                             pop>    
+1785: INSTR13<                       mov:rsp,v>    0
+1787: INSTR31<                        swap_top>    0
+1789: INSTR0 <                             xor>    
+1790: INSTR63<                   r.length -= v>    5
+1792: INSTR37<                             pop>    
+1793: INSTR17<                             jmp>    1655(pos:1655)
+1795: INSTR12<                        push:[v]>    5
+1797: INSTR55<                            push>    0
+1799: INSTR41<                 set_stack:nopop>    
+1800: INSTR31<                        swap_top>    0
+1802: INSTR37<                             pop>    
+1803: INSTR37<                             pop>    
+1804: INSTR12<                        push:[v]>    5
+1806: INSTR48<        r.push(r[r.pop()[0]][0])>    
+1807: INSTR12<                        push:[v]>    3
+1809: INSTR16<                         push:"">    
+1810: INSTR68<                      append_str>    97(a)
+1812: INSTR24<                     as_get_prop>    
+1813: INSTR55<                            push>    9
+1815: INSTR65<                    rec_get_prop>    
+1816: INSTR57<                     do_get_prop>    
+1817: INSTR34<                              ge>    
+1818: INSTR9 <                             not>    
+1819: INSTR32<                             jnz>    1824(pos:1824)
+1821: INSTR37<                             pop>    
+1822: INSTR17<                             jmp>    1944(pos:1944)
+1824: INSTR12<                        push:[v]>    6
+1826: INSTR58<                             dup>    
+1827: INSTR48<        r.push(r[r.pop()[0]][0])>    
+1828: INSTR16<                         push:"">    
+1829: INSTR68<                      append_str>    66(B)
+1831: INSTR68<                      append_str>    105(i)
+1833: INSTR68<                      append_str>    103(g)
+1835: INSTR68<                      append_str>    73(I)
+1837: INSTR68<                      append_str>    110(n)
+1839: INSTR68<                      append_str>    116(t)
+1841: INSTR45<                             c[]>    
+1842: INSTR16<                         push:"">    
+1843: INSTR68<                      append_str>    54(6)
+1845: INSTR68<                      append_str>    50(2)
+1847: INSTR68<                      append_str>    52(4)
+1849: INSTR68<                      append_str>    54(6)
+1851: INSTR68<                      append_str>    56(8)
+1853: INSTR68<                      append_str>    55(7)
+1855: INSTR68<                      append_str>    51(3)
+1857: INSTR52<                     call_n_args>    1
+1859: INSTR44<                             mul>    
+1860: INSTR41<                 set_stack:nopop>    
+1861: INSTR31<                        swap_top>    0
+1863: INSTR12<                        push:[v]>    6
+1865: INSTR58<                             dup>    
+1866: INSTR48<        r.push(r[r.pop()[0]][0])>    
+1867: INSTR16<                         push:"">    
+1868: INSTR68<                      append_str>    66(B)
+1870: INSTR68<                      append_str>    105(i)
+1872: INSTR68<                      append_str>    103(g)
+1874: INSTR68<                      append_str>    73(I)
+1876: INSTR68<                      append_str>    110(n)
+1878: INSTR68<                      append_str>    116(t)
+1880: INSTR45<                             c[]>    
+1881: INSTR16<                         push:"">    
+1882: INSTR68<                      append_str>    49(1)
+1884: INSTR68<                      append_str>    49(1)
+1886: INSTR68<                      append_str>    50(2)
+1888: INSTR68<                      append_str>    53(5)
+1890: INSTR68<                      append_str>    56(8)
+1892: INSTR68<                      append_str>    57(9)
+1894: INSTR68<                      append_str>    57(9)
+1896: INSTR68<                      append_str>    57(9)
+1898: INSTR68<                      append_str>    48(0)
+1900: INSTR68<                      append_str>    54(6)
+1902: INSTR68<                      append_str>    56(8)
+1904: INSTR68<                      append_str>    52(4)
+1906: INSTR68<                      append_str>    50(2)
+1908: INSTR68<                      append_str>    53(5)
+1910: INSTR68<                      append_str>    57(9)
+1912: INSTR68<                      append_str>    55(7)
+1914: INSTR52<                     call_n_args>    1
+1916: INSTR15<                             mod>    
+1917: INSTR41<                 set_stack:nopop>    
+1918: INSTR31<                        swap_top>    0
+1920: INSTR12<                        push:[v]>    5
+1922: INSTR58<                             dup>    
+1923: INSTR48<        r.push(r[r.pop()[0]][0])>    
+1924: INSTR58<                             dup>    
+1925: INSTR31<                        swap_top>    1
+1927: INSTR31<                        swap_top>    0
+1929: INSTR55<                            push>    1
+1931: INSTR66<                             add>    
+1932: INSTR41<                 set_stack:nopop>    
+1933: INSTR37<                             pop>    
+1934: INSTR13<                       mov:rsp,v>    0
+1936: INSTR31<                        swap_top>    0
+1938: INSTR0 <                             xor>    
+1939: INSTR63<                   r.length -= v>    5
+1941: INSTR37<                             pop>    
+1942: INSTR17<                             jmp>    1804(pos:1804)
+1944: INSTR12<                        push:[v]>    4
+1946: INSTR58<                             dup>    
+1947: INSTR48<        r.push(r[r.pop()[0]][0])>    
+1948: INSTR53<                 r.push(r[v][0])>    6
+1950: INSTR66<                             add>    
+1951: INSTR41<                 set_stack:nopop>    
+1952: INSTR31<                        swap_top>    0
+1954: INSTR12<                        push:[v]>    4
+1956: INSTR58<                             dup>    
+1957: INSTR48<        r.push(r[r.pop()[0]][0])>    
+1958: INSTR16<                         push:"">    
+1959: INSTR68<                      append_str>    66(B)
+1961: INSTR68<                      append_str>    105(i)
+1963: INSTR68<                      append_str>    103(g)
+1965: INSTR68<                      append_str>    73(I)
+1967: INSTR68<                      append_str>    110(n)
+1969: INSTR68<                      append_str>    116(t)
+1971: INSTR45<                             c[]>    
+1972: INSTR16<                         push:"">    
+1973: INSTR68<                      append_str>    49(1)
+1975: INSTR68<                      append_str>    49(1)
+1977: INSTR68<                      append_str>    50(2)
+1979: INSTR68<                      append_str>    53(5)
+1981: INSTR68<                      append_str>    56(8)
+1983: INSTR68<                      append_str>    57(9)
+1985: INSTR68<                      append_str>    57(9)
+1987: INSTR68<                      append_str>    57(9)
+1989: INSTR68<                      append_str>    48(0)
+1991: INSTR68<                      append_str>    54(6)
+1993: INSTR68<                      append_str>    56(8)
+1995: INSTR68<                      append_str>    52(4)
+1997: INSTR68<                      append_str>    50(2)
+1999: INSTR68<                      append_str>    53(5)
+2001: INSTR68<                      append_str>    57(9)
+2003: INSTR68<                      append_str>    55(7)
+2005: INSTR52<                     call_n_args>    1
+2007: INSTR15<                             mod>    
+2008: INSTR41<                 set_stack:nopop>    
+2009: INSTR31<                        swap_top>    0
+2011: INSTR12<                        push:[v]>    5
+2013: INSTR55<                            push>    0
+2015: INSTR41<                 set_stack:nopop>    
+2016: INSTR31<                        swap_top>    0
+2018: INSTR12<                        push:[v]>    6
+2020: INSTR16<                         push:"">    
+2021: INSTR68<                      append_str>    66(B)
+2023: INSTR68<                      append_str>    105(i)
+2025: INSTR68<                      append_str>    103(g)
+2027: INSTR68<                      append_str>    73(I)
+2029: INSTR68<                      append_str>    110(n)
+2031: INSTR68<                      append_str>    116(t)
+2033: INSTR45<                             c[]>    
+2034: INSTR55<                            push>    1
+2036: INSTR52<                     call_n_args>    1
+2038: INSTR41<                 set_stack:nopop>    
+2039: INSTR31<                        swap_top>    0
+2041: INSTR63<                   r.length -= v>    8
+2043: INSTR12<                        push:[v]>    5
+2045: INSTR48<        r.push(r[r.pop()[0]][0])>    
+2046: INSTR12<                        push:[v]>    3
+2048: INSTR16<                         push:"">    
+2049: INSTR68<                      append_str>    97(a)
+2051: INSTR24<                     as_get_prop>    
+2052: INSTR55<                            push>    10
+2054: INSTR65<                    rec_get_prop>    
+2055: INSTR57<                     do_get_prop>    
+2056: INSTR34<                              ge>    
+2057: INSTR9 <                             not>    
+2058: INSTR32<                             jnz>    2063(pos:2063)
+2060: INSTR37<                             pop>    
+2061: INSTR17<                             jmp>    2183(pos:2183)
+2063: INSTR12<                        push:[v]>    6
+2065: INSTR58<                             dup>    
+2066: INSTR48<        r.push(r[r.pop()[0]][0])>    
+2067: INSTR16<                         push:"">    
+2068: INSTR68<                      append_str>    66(B)
+2070: INSTR68<                      append_str>    105(i)
+2072: INSTR68<                      append_str>    103(g)
+2074: INSTR68<                      append_str>    73(I)
+2076: INSTR68<                      append_str>    110(n)
+2078: INSTR68<                      append_str>    116(t)
+2080: INSTR45<                             c[]>    
+2081: INSTR16<                         push:"">    
+2082: INSTR68<                      append_str>    56(8)
+2084: INSTR68<                      append_str>    55(7)
+2086: INSTR68<                      append_str>    50(2)
+2088: INSTR68<                      append_str>    54(6)
+2090: INSTR68<                      append_str>    57(9)
+2092: INSTR68<                      append_str>    48(0)
+2094: INSTR68<                      append_str>    57(9)
+2096: INSTR52<                     call_n_args>    1
+2098: INSTR44<                             mul>    
+2099: INSTR41<                 set_stack:nopop>    
+2100: INSTR31<                        swap_top>    0
+2102: INSTR12<                        push:[v]>    6
+2104: INSTR58<                             dup>    
+2105: INSTR48<        r.push(r[r.pop()[0]][0])>    
+2106: INSTR16<                         push:"">    
+2107: INSTR68<                      append_str>    66(B)
+2109: INSTR68<                      append_str>    105(i)
+2111: INSTR68<                      append_str>    103(g)
+2113: INSTR68<                      append_str>    73(I)
+2115: INSTR68<                      append_str>    110(n)
+2117: INSTR68<                      append_str>    116(t)
+2119: INSTR45<                             c[]>    
+2120: INSTR16<                         push:"">    
+2121: INSTR68<                      append_str>    49(1)
+2123: INSTR68<                      append_str>    49(1)
+2125: INSTR68<                      append_str>    50(2)
+2127: INSTR68<                      append_str>    53(5)
+2129: INSTR68<                      append_str>    56(8)
+2131: INSTR68<                      append_str>    57(9)
+2133: INSTR68<                      append_str>    57(9)
+2135: INSTR68<                      append_str>    57(9)
+2137: INSTR68<                      append_str>    48(0)
+2139: INSTR68<                      append_str>    54(6)
+2141: INSTR68<                      append_str>    56(8)
+2143: INSTR68<                      append_str>    52(4)
+2145: INSTR68<                      append_str>    50(2)
+2147: INSTR68<                      append_str>    53(5)
+2149: INSTR68<                      append_str>    57(9)
+2151: INSTR68<                      append_str>    55(7)
+2153: INSTR52<                     call_n_args>    1
+2155: INSTR15<                             mod>    
+2156: INSTR41<                 set_stack:nopop>    
+2157: INSTR31<                        swap_top>    0
+2159: INSTR12<                        push:[v]>    5
+2161: INSTR58<                             dup>    
+2162: INSTR48<        r.push(r[r.pop()[0]][0])>    
+2163: INSTR58<                             dup>    
+2164: INSTR31<                        swap_top>    1
+2166: INSTR31<                        swap_top>    0
+2168: INSTR55<                            push>    1
+2170: INSTR66<                             add>    
+2171: INSTR41<                 set_stack:nopop>    
+2172: INSTR37<                             pop>    
+2173: INSTR13<                       mov:rsp,v>    0
+2175: INSTR31<                        swap_top>    0
+2177: INSTR0 <                             xor>    
+2178: INSTR63<                   r.length -= v>    5
+2180: INSTR37<                             pop>    
+2181: INSTR17<                             jmp>    2043(pos:2043)
+2183: INSTR12<                        push:[v]>    5
+2185: INSTR55<                            push>    0
+2187: INSTR41<                 set_stack:nopop>    
+2188: INSTR31<                        swap_top>    0
+2190: INSTR37<                             pop>    
+2191: INSTR37<                             pop>    
+2192: INSTR12<                        push:[v]>    5
+2194: INSTR48<        r.push(r[r.pop()[0]][0])>    
+2195: INSTR12<                        push:[v]>    3
+2197: INSTR16<                         push:"">    
+2198: INSTR68<                      append_str>    97(a)
+2200: INSTR24<                     as_get_prop>    
+2201: INSTR55<                            push>    11
+2203: INSTR65<                    rec_get_prop>    
+2204: INSTR57<                     do_get_prop>    
+2205: INSTR34<                              ge>    
+2206: INSTR9 <                             not>    
+2207: INSTR32<                             jnz>    2212(pos:2212)
+2209: INSTR37<                             pop>    
+2210: INSTR17<                             jmp>    2332(pos:2332)
+2212: INSTR12<                        push:[v]>    6
+2214: INSTR58<                             dup>    
+2215: INSTR48<        r.push(r[r.pop()[0]][0])>    
+2216: INSTR16<                         push:"">    
+2217: INSTR68<                      append_str>    66(B)
+2219: INSTR68<                      append_str>    105(i)
+2221: INSTR68<                      append_str>    103(g)
+2223: INSTR68<                      append_str>    73(I)
+2225: INSTR68<                      append_str>    110(n)
+2227: INSTR68<                      append_str>    116(t)
+2229: INSTR45<                             c[]>    
+2230: INSTR16<                         push:"">    
+2231: INSTR68<                      append_str>    53(5)
+2233: INSTR68<                      append_str>    56(8)
+2235: INSTR68<                      append_str>    49(1)
+2237: INSTR68<                      append_str>    49(1)
+2239: INSTR68<                      append_str>    55(7)
+2241: INSTR68<                      append_str>    55(7)
+2243: INSTR68<                      append_str>    51(3)
+2245: INSTR52<                     call_n_args>    1
+2247: INSTR44<                             mul>    
+2248: INSTR41<                 set_stack:nopop>    
+2249: INSTR31<                        swap_top>    0
+2251: INSTR12<                        push:[v]>    6
+2253: INSTR58<                             dup>    
+2254: INSTR48<        r.push(r[r.pop()[0]][0])>    
+2255: INSTR16<                         push:"">    
+2256: INSTR68<                      append_str>    66(B)
+2258: INSTR68<                      append_str>    105(i)
+2260: INSTR68<                      append_str>    103(g)
+2262: INSTR68<                      append_str>    73(I)
+2264: INSTR68<                      append_str>    110(n)
+2266: INSTR68<                      append_str>    116(t)
+2268: INSTR45<                             c[]>    
+2269: INSTR16<                         push:"">    
+2270: INSTR68<                      append_str>    49(1)
+2272: INSTR68<                      append_str>    49(1)
+2274: INSTR68<                      append_str>    50(2)
+2276: INSTR68<                      append_str>    53(5)
+2278: INSTR68<                      append_str>    56(8)
+2280: INSTR68<                      append_str>    57(9)
+2282: INSTR68<                      append_str>    57(9)
+2284: INSTR68<                      append_str>    57(9)
+2286: INSTR68<                      append_str>    48(0)
+2288: INSTR68<                      append_str>    54(6)
+2290: INSTR68<                      append_str>    56(8)
+2292: INSTR68<                      append_str>    52(4)
+2294: INSTR68<                      append_str>    50(2)
+2296: INSTR68<                      append_str>    53(5)
+2298: INSTR68<                      append_str>    57(9)
+2300: INSTR68<                      append_str>    55(7)
+2302: INSTR52<                     call_n_args>    1
+2304: INSTR15<                             mod>    
+2305: INSTR41<                 set_stack:nopop>    
+2306: INSTR31<                        swap_top>    0
+2308: INSTR12<                        push:[v]>    5
+2310: INSTR58<                             dup>    
+2311: INSTR48<        r.push(r[r.pop()[0]][0])>    
+2312: INSTR58<                             dup>    
+2313: INSTR31<                        swap_top>    1
+2315: INSTR31<                        swap_top>    0
+2317: INSTR55<                            push>    1
+2319: INSTR66<                             add>    
+2320: INSTR41<                 set_stack:nopop>    
+2321: INSTR37<                             pop>    
+2322: INSTR13<                       mov:rsp,v>    0
+2324: INSTR31<                        swap_top>    0
+2326: INSTR0 <                             xor>    
+2327: INSTR63<                   r.length -= v>    5
+2329: INSTR37<                             pop>    
+2330: INSTR17<                             jmp>    2192(pos:2192)
+2332: INSTR12<                        push:[v]>    4
+2334: INSTR58<                             dup>    
+2335: INSTR48<        r.push(r[r.pop()[0]][0])>    
+2336: INSTR53<                 r.push(r[v][0])>    6
+2338: INSTR66<                             add>    
+2339: INSTR41<                 set_stack:nopop>    
+2340: INSTR31<                        swap_top>    0
+2342: INSTR12<                        push:[v]>    4
+2344: INSTR58<                             dup>    
+2345: INSTR48<        r.push(r[r.pop()[0]][0])>    
+2346: INSTR16<                         push:"">    
+2347: INSTR68<                      append_str>    66(B)
+2349: INSTR68<                      append_str>    105(i)
+2351: INSTR68<                      append_str>    103(g)
+2353: INSTR68<                      append_str>    73(I)
+2355: INSTR68<                      append_str>    110(n)
+2357: INSTR68<                      append_str>    116(t)
+2359: INSTR45<                             c[]>    
+2360: INSTR16<                         push:"">    
+2361: INSTR68<                      append_str>    49(1)
+2363: INSTR68<                      append_str>    49(1)
+2365: INSTR68<                      append_str>    50(2)
+2367: INSTR68<                      append_str>    53(5)
+2369: INSTR68<                      append_str>    56(8)
+2371: INSTR68<                      append_str>    57(9)
+2373: INSTR68<                      append_str>    57(9)
+2375: INSTR68<                      append_str>    57(9)
+2377: INSTR68<                      append_str>    48(0)
+2379: INSTR68<                      append_str>    54(6)
+2381: INSTR68<                      append_str>    56(8)
+2383: INSTR68<                      append_str>    52(4)
+2385: INSTR68<                      append_str>    50(2)
+2387: INSTR68<                      append_str>    53(5)
+2389: INSTR68<                      append_str>    57(9)
+2391: INSTR68<                      append_str>    55(7)
+2393: INSTR52<                     call_n_args>    1
+2395: INSTR15<                             mod>    
+2396: INSTR41<                 set_stack:nopop>    
+2397: INSTR31<                        swap_top>    0
+2399: INSTR16<                         push:"">    
+2400: INSTR68<                      append_str>    112(p)
+2402: INSTR68<                      append_str>    97(a)
+2404: INSTR68<                      append_str>    114(r)
+2406: INSTR68<                      append_str>    115(s)
+2408: INSTR68<                      append_str>    101(e)
+2410: INSTR68<                      append_str>    73(I)
+2412: INSTR68<                      append_str>    110(n)
+2414: INSTR68<                      append_str>    116(t)
+2416: INSTR45<                             c[]>    
+2417: INSTR53<                 r.push(r[v][0])>    4
+2419: INSTR52<                     call_n_args>    1
+2421: INSTR7 <                             ret>    
+2422: INSTR5 <                  push:undefined>    
+2423: INSTR7 <                             ret>    
+2424: INSTR63<                   r.length -= v>    4
+2426: INSTR3 <                   push_callback>    38(pos:38), 0, 1, 3
+2431: INSTR8 <                  set_prop:nopop>    
+2432: INSTR31<                        swap_top>    0
+2434: INSTR5 <                  push:undefined>    
+2435: INSTR7 <                             ret>    
+2436: INSTR37<                             pop>    
+2437: INSTR37<                             pop>    

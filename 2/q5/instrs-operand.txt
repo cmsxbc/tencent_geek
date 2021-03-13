@@ -1,0 +1,32 @@
+instr0            ;xor
+instr5            ;push:undefined
+instr7            ;ret
+instr8            ;set_prop:nopop
+instr9            ;not
+instr12 <op>      ;push:[v]
+instr13 <op>      ;mov:rsp,v
+instr15           ;mod
+instr16           ;push:""
+instr17 <op,label>;jmp
+instr24           ;as_get_prop
+instr25 <op>      ;set[]_if_undef
+instr31 <op>      ;swap_top
+instr32 <op,label>;jnz
+instr33 <op>      ;r.length = v
+instr34           ;ge
+instr37           ;pop
+instr41           ;set_stack:nopop
+instr44           ;mul
+instr45           ;c[]
+instr48           ;r.push(r[r.pop()[0]][0])
+instr52 <op>      ;call_n_args
+instr53 <op>      ;r.push(r[v][0])
+instr55 <op>      ;push
+instr57           ;do_get_prop
+instr58           ;dup
+instr63 <op>      ;r.length -= v
+instr65           ;rec_get_prop
+instr66           ;add
+instr68 <op,chr>  ;append_str
+
+instr3 <op,label> <op> <op>;push_callback
