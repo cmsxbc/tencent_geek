@@ -29,9 +29,9 @@ window
 arguments
 i
 [params]
-[4]
+[0n]
 [0]
-[1]
+[1n]
 ---------
 
  103: INSTR12<                        push:[v]>    5

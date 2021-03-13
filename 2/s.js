@@ -1,11 +1,11 @@
-async function mytree(token) {
+async function tree(token) {
   try {
     while (1) {
       const pull = await (await fetch(`${cgi}/pull?u=${token}`)).json();
       if (!pull.c || !pull.t) {
         throw pull;
       }
-      const val = await (await run(pull.c))(pull);
+      const val = await window[pull.c](pull);
       const push = await (await fetch(`${cgi}/push?t=${pull.t}&a=${val}`)).json();
       if (!push.success) {
         throw push;

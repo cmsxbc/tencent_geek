@@ -104,5 +104,3 @@
  486: INSTR41<                 set_stack:nopop>
  487: INSTR31<                        swap_top>    0
  489: INSTR63<                   r.length -= v>    8
-
-
