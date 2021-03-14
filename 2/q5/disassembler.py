@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from collections import defaultdict
 
 import init_program
-
+import instrs_mapping
 
 CASTS = {
     'chr': chr,
@@ -88,7 +88,8 @@ class ReadableProgram(list):
         return '\n'.join(map(str, self))
 
 
-def load_instrs(instrs_filepath: str) -> Dict[int, Instr]:
+def load_instrs(instrs_filepath: str, mapping_config: List[List[int]]) -> Dict[int, Instr]:
+    mapping = {o: n for o, n in mapping_config}
     instrs = {}
     with open(instrs_filepath) as fin:
         for line in fin.readlines():
@@ -97,6 +98,7 @@ def load_instrs(instrs_filepath: str) -> Dict[int, Instr]:
             instr_desc, *alias = line.split(';')
             instr, *ops = instr_desc.strip().split(' ')
             code = int(instr.replace('instr', '').strip())
+            code = mapping[code]
             # op = len(list(filter(lambda x: x.strip() == '<op>', ops)))
             op_count = 0
             op_casts = defaultdict(lambda: lambda x: x)
@@ -123,6 +125,8 @@ def disassembler(program: List[int], instrs: Dict[int, Instr]) -> ReadableProgra
         code = program[i]
         instr = instrs.get(code, None)
         if not instr:
+            i += 1
+            continue
             raise Exception(f"{i} => {program[i]} has no instr")
         i += 1
         if instr.code == 3:
@@ -205,11 +209,11 @@ def optimize(codes: ReadableProgram[Code], level: int = -1) -> ReadableProgram[C
 
 if __name__ == '__main__':
     codes = disassembler(
-        init_program.program,
-        load_instrs('instrs-operand.txt')
+        init_program.program3,
+        load_instrs('instrs-operand.txt', instrs_mapping.mapping3)
     )
-    with open('disassemble_init_program.txt', 'w+') as f:
+    with open('disassemble_init_program-3.txt', 'w+') as f:
         f.write(str(codes))
 
-    with open('optimize_disassemble_init_program.txt', 'w+') as f:
-        f.write(str(optimize(codes, level=-1)))
+    # with open('optimize_disassemble_init_program-2.txt', 'w+') as f:
+    #     f.write(str(optimize(codes, level=1)))
