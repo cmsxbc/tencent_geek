@@ -1,12 +1,14 @@
 from __future__ import annotations
-from typing import Dict, List, Callable, Any, Union
+from typing import Dict, List, Callable, Any, Union, Optional
 from dataclasses import dataclass, field, InitVar
 from collections import defaultdict
 import json
+import base64
 
 
 import instr_def
 import instr_config
+import vm
 
 
 def id_func(x):
@@ -15,8 +17,8 @@ def id_func(x):
 
 @dataclass
 class StackOp:
-    instr_source: InitVar[str]
-    config: InitVar[Dict[str, Union[int, bool]]]
+    instr_source: InitVar[str] = ''
+    config: InitVar[Dict[str, Union[int, bool]]] = field(default={})
     push: int = 0
     pop: int = 0
     delta: int = field(default=0, init=False)
@@ -24,10 +26,13 @@ class StackOp:
     absolute: bool = False
 
     def __post_init__(self, instr_source, config):
-        r = {
-            'push': instr_source.count(f'{instr_def.stack_var}.push('),
-            'pop': -instr_source.count(f'{instr_def.stack_var}.pop('),
-        }
+        if instr_source:
+            r = {
+                'push': instr_source.count(f'{instr_def.stack_var}.push('),
+                'pop': -instr_source.count(f'{instr_def.stack_var}.pop('),
+            }
+        else:
+            r = {}
         r.update(config)
         for k, v in r.items():
             setattr(self, k, v)
@@ -65,6 +70,7 @@ class Instr:
     ops_cast: Callable[[List[int]], Any] = id_func
     var_operands: bool = False
     calc_var_op_count: Callable[[List[int]], int] = lambda x: len(x)
+    func: vm.VmFunc = vm.default_vm_func
 
     def __post_init__(self):
         if not self.name:
@@ -80,6 +86,10 @@ class Instr:
 
     def str_stack_delta(self, operands: List[int]) -> str:
         return self.stack_op.str_calc_delta(operands)
+
+    def run(self, vm: vm.VM, ops: List[int]):
+        return self.func(vm, ops)
+
 
 @dataclass
 class OptIt(Instr):
@@ -122,6 +132,9 @@ class Code:
         else:
             return str(operand)
 
+    def run(self, vm: vm.VM):
+        return self.instr.run(vm, self.operands)
+
 
 @dataclass
 class OptCode(Code):
@@ -131,10 +144,25 @@ class OptCode(Code):
         self.origin_codes.append(code)
         self.operands += code.operands
 
+
+@dataclass
+class AutoOptCode(OptCode):
+
     def str_operands(self):
         r = self.instr.ops_cast(self.operands)
         if r != self.operands:
             return f'{super().str_operands()}({r!s})'
+        else:
+            return super().str_operands()
+
+
+@dataclass
+class HumanOptCode(OptCode):
+    human_ops: List[Any] = field(default_factory=list)
+
+    def str_operands(self):
+        if len(self.human_ops):
+            return ','.join(map(repr, self.human_ops))
         else:
             return super().str_operands()
 
@@ -185,6 +213,8 @@ def load_instrs(config: InstrDef) -> Dict[int, Instr]:
             instrs[code] = Instr(code, 'nop', op_count, stack_op)
         else:
             instrs[code] = Instr(code, code_config.alias, op_count, stack_op, code_config.op_labels)
+        if code_config.func:
+            instrs[code].func = code_config.func
     return instrs
 
 
@@ -199,6 +229,7 @@ def disassembler(program: List[int], instrs: Dict[int, Instr], offset: int = 0) 
         if not instr:
             # i += 1
             # continue
+            print(codes)
             raise Exception(f"{i} => {program[i]} has no instr")
         i += 1
         if instr.var_operands:
@@ -214,10 +245,151 @@ def disassembler(program: List[int], instrs: Dict[int, Instr], offset: int = 0) 
     return codes
 
 
+def run_segment(segment: List[Code], v: Optional[vm.VM] = None) -> vm.VM:
+    if v is None:
+        v = vm.VM()
+    for code_ in segment:
+        code_.run(v)
+    return v
+
+
+def run_forever(v: vm.VM, start: int, program: List[Code]) -> int:
+    try:
+        while True:
+            program[start].run(v)
+            start += 1
+    except NotImplementedError:
+        print('\t\tnot implement', program[start])
+        return start
+
+
+def optimize_str(program: ReadableProgram[Code]) -> (ReadableProgram[Code], str):
+    length = len(program)
+    i = 0
+    optimized_program = ReadableProgram()
+    longest_str = ''
+
+    def mk_push_str(segment: List[Code]):
+        nonlocal longest_str
+        operands = [op for c in segment for op in c.operands]
+        v = run_segment(segment)
+
+        if v.depth() == 1:
+            name = 'push:str'
+        else:
+            name = 'push:str_se'
+        instr = OptIt(0, name, len(operands) + len(segment) - 1, StackOp(push=v.depth()))
+        human_ops = list(v)
+        if len(longest_str) < len(human_ops[0]):
+            longest_str = human_ops[0]
+        return HumanOptCode(segment[0].pos, instr, operands, segment, human_ops)
+
+    def run_until_string_end(start: int, v: Optional[vm.VM] = None) -> (int, int):
+        if v is None:
+            v = vm.VM()
+        start_depth = v.depth()
+        program[start].run(v)
+        chr_pos = start
+        start += 1
+        try:
+            while v.depth() - start_depth < 4:
+                _code = program[start]
+                _code.run(v)
+                if _code.instr.code == instr_config.CHR_INSTR:
+                    chr_pos = start
+                start += 1
+        except NotImplementedError:
+            print('\t\tnot implement', program[start])
+        except Exception as e:
+            print(e)
+        return chr_pos + 1, start
+
+    while i < length:
+        code = program[i]
+        new_code = code
+        if code.instr.code == instr_config.START_STRING_INSTR:
+            new_i, _ = run_until_string_end(i)
+            if new_i == i:
+                raise Exception("hehe")
+            else:
+                range_codes: List[Code] = program[i:new_i]
+                new_code = mk_push_str(range_codes)
+                print(new_code)
+            i = new_i
+        else:
+            i += 1
+        optimized_program.append(new_code)
+
+    return optimized_program, longest_str
+
+
+def optimize_array(program: ReadableProgram[Code]) -> (ReadableProgram[Code], List[int]):
+    length = len(program)
+    i = 0
+    optimized_program = ReadableProgram()
+    longest_array = []
+
+    def mk_push_array(segment: List[Code], v: Optional[vm.VM] = None):
+        nonlocal longest_array
+        if v is None:
+            v = vm.VM()
+        res = {}
+        v.push(res)
+        for c in segment:
+            c.run(v)
+        longest_array = list(res.values())
+        return
+
+    mk_push_array(program)
+
+    # while i < length:
+    #     code = program[i]
+    #     new_code = code
+    #     optimized_program.append(new_code)
+
+    return optimized_program, longest_array
+
+
+def gen_real_program(source: str, patch_array: List[int]) -> List[int]:
+    program = []
+    patches = {
+        patch_array[i]: patch_array[i+1] for i in range(0, len(patch_array), 2)
+    }
+    print(patches)
+    for c in base64.b64decode(source):
+        v = patches.get(len(program), None)
+        if v is not None:
+            program.append(v)
+        program.append(c)
+    print(len(program))
+    return program
+
+
 if __name__ == '__main__':
+    import os
     instrs = load_instrs(instr_def)
-    with open('program.json') as fin, open('program.vmasm.txt', 'w+') as fout:
+    offsets = (0, 48)
+    with open('program.json') as fin:
         program = json.load(fin)
         print('program length:', len(program))
-        codes = disassembler(program, instrs)
-        fout.write(str(codes))
+        for offset in offsets:
+            codes = disassembler(program, instrs, offset)
+            os.makedirs(f'offset_program/{offset}')
+            with open(f'offset_program/{offset}/program.vmasm.txt', 'w+') as fout:
+                fout.write(str(codes))
+            optimized_codes, longest_str = optimize_str(codes)
+            with open(f'offset_program/{offset}/optimized.str.vmasm.txt', 'w+') as fout:
+                fout.write(str(optimized_codes))
+            with open(f'offset_program/{offset}/longest_str.txt', 'w+') as f:
+                f.write(longest_str)
+
+    exit()
+
+    optimized_codes, longest_array = optimize_array(optimized_codes[9485:16285])
+    print(longest_array)
+    disassembler(
+        gen_real_program(longest_str, longest_array),
+        instrs
+    )
+    exit()
+
