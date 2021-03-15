@@ -374,7 +374,8 @@ if __name__ == '__main__':
         print('program length:', len(program))
         for offset in offsets:
             codes = disassembler(program, instrs, offset)
-            os.makedirs(f'offset_program/{offset}')
+            if not os.path.isdir(f'offset_program/{offset}'):
+                os.makedirs(f'offset_program/{offset}')
             with open(f'offset_program/{offset}/program.vmasm.txt', 'w+') as fout:
                 fout.write(str(codes))
             optimized_codes, longest_str = optimize_str(codes)

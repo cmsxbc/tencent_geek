@@ -69,10 +69,11 @@ config: Dict[int, InstrConfig] = cdd({
     44: InstrConfig('push:vm', cdd({0: CASTS['label']})),
     45: InstrConfig('push:""', func=vm.push_empty_str),
     46: InstrConfig('mul', func=vm.mul),
+    47: InstrConfig('set:g=null'),
     50: InstrConfig('dup:n'),
     52: InstrConfig('jnz', cdd({0: CASTS['label']})),
     53: InstrConfig('throw'),
-    54: InstrConfig('ret'),
+    54: InstrConfig('ret:true'),
     55: InstrConfig('mod'),
     56: InstrConfig('brk', stack_props={'dynamic': True, 'absolute': True}),
     58: InstrConfig('==='),
@@ -80,7 +81,7 @@ config: Dict[int, InstrConfig] = cdd({
     62: InstrConfig('init_stack:list'),
     64: InstrConfig('apply:method', stack_props={'dynamic': True, 'absolute': False}),
     66: InstrConfig('chr:+top', func=vm.append_chr),
-    67: InstrConfig('double_not')
+    67: InstrConfig('return:!!g')
 }, default_factory=InstrConfig)
 
 
