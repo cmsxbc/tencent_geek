@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Dict, Callable, Any
+from typing import Dict, Callable, Any, Union
 from collections import defaultdict
 
 CASTS = {
@@ -20,6 +20,7 @@ def cdd(init_dict, default_factory: Any = lambda: id_func):
 class InstrConfig:
     alias: str = ''
     op_labels: Dict[int, Callable] = field(default_factory=lambda: defaultdict(lambda: id_func))
+    stack_props: Dict[str, Union[int, bool]] = field(default_factory=dict)
 
 
 config: Dict[int, InstrConfig] = cdd({
@@ -32,17 +33,17 @@ config: Dict[int, InstrConfig] = cdd({
     6: InstrConfig('set_stack:pop'),
     7: InstrConfig('combine:2'),
     8: InstrConfig('mov:rsp,v'),
-    10: InstrConfig('shirk_stack'),
+    10: InstrConfig('shirk_stack', stack_props={'dynamic': True, 'absolute': False}),
     11: InstrConfig('in:snd,top'),
     14: InstrConfig('swap:top,v+1'),
     15: InstrConfig('dup'),
     16: InstrConfig('mklist'),
-    18: InstrConfig('create_instance'),
+    18: InstrConfig('create_instance', stack_props={'dynamic': True, 'absolute': False}),
     21: InstrConfig('~'),
     22: InstrConfig('&'),
-    23: InstrConfig('jmp'),
+    23: InstrConfig('jmp', cdd({0: CASTS['label']})),
     24: InstrConfig('pop'),
-    25: InstrConfig('apply:func'),
+    25: InstrConfig('apply:func', stack_props={'dynamic': True, 'absolute': False}),
     26: InstrConfig('window[]'),
     27: InstrConfig('add'),
     28: InstrConfig('prop:del'),
@@ -53,7 +54,7 @@ config: Dict[int, InstrConfig] = cdd({
     33: InstrConfig('|'),
     34: InstrConfig('div'),
     35: InstrConfig('ge'),
-    36: InstrConfig('create_instance:prop'),
+    36: InstrConfig('create_instance:prop', stack_props={'dynamic': True, 'absolute': False}),
     37: InstrConfig('not'),
     39: InstrConfig('>>>'),
     40: InstrConfig('push:undefined'),
@@ -64,15 +65,15 @@ config: Dict[int, InstrConfig] = cdd({
     45: InstrConfig('push:""'),
     46: InstrConfig('mul'),
     50: InstrConfig('dup:n'),
-    52: InstrConfig('jnz'),
+    52: InstrConfig('jnz', cdd({0: CASTS['label']})),
     53: InstrConfig('throw'),
     54: InstrConfig('ret'),
     55: InstrConfig('mod'),
-    56: InstrConfig('brk'),
+    56: InstrConfig('brk', stack_props={'dynamic': True, 'absolute': True}),
     58: InstrConfig('==='),
     61: InstrConfig('gt'),
     62: InstrConfig('init_stack:list'),
-    64: InstrConfig('apply:method'),
+    64: InstrConfig('apply:method', stack_props={'dynamic': True, 'absolute': False}),
     66: InstrConfig('chr:+top'),
     67: InstrConfig('double_not')
 }, default_factory=InstrConfig)
