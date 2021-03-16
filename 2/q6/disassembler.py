@@ -229,7 +229,7 @@ def disassembler(program: List[int], instrs: Dict[int, Instr], offset: int = 0) 
         if not instr:
             # i += 1
             # continue
-            print(codes)
+            # print(codes)
             raise Exception(f"{i} => {program[i]} has no instr")
         i += 1
         if instr.var_operands:
@@ -263,6 +263,11 @@ def run_forever(v: vm.VM, start: int, program: List[Code]) -> int:
         return start
 
 
+OPT_INSTR_CODES = {
+    'str': 0
+}
+
+
 def optimize_str(program: ReadableProgram[Code]) -> (ReadableProgram[Code], str):
     length = len(program)
     i = 0
@@ -273,13 +278,18 @@ def optimize_str(program: ReadableProgram[Code]) -> (ReadableProgram[Code], str)
         nonlocal longest_str
         operands = [op for c in segment for op in c.operands]
         v = run_segment(segment)
+        human_ops = list(v)
 
         if v.depth() == 1:
             name = 'push:str'
         else:
             name = 'push:str_se'
-        instr = OptIt(0, name, len(operands) + len(segment) - 1, StackOp(push=v.depth()))
-        human_ops = list(v)
+
+        def _vm_func(vm_: vm.VM, ops: List[int]):
+            for op in human_ops:
+                vm_.push(op)
+
+        instr = OptIt(OPT_INSTR_CODES['str'], name, len(operands) + len(segment) - 1, StackOp(push=v.depth()), func=_vm_func)
         if len(longest_str) < len(human_ops[0]):
             longest_str = human_ops[0]
         return HumanOptCode(segment[0].pos, instr, operands, segment, human_ops)
@@ -299,9 +309,11 @@ def optimize_str(program: ReadableProgram[Code]) -> (ReadableProgram[Code], str)
                     chr_pos = start
                 start += 1
         except NotImplementedError:
-            print('\t\tnot implement', program[start])
+            # print('\t\tnot implement', program[start])
+            pass
         except Exception as e:
-            print(e)
+            # print(e)
+            pass
         return chr_pos + 1, start
 
     while i < length:
@@ -310,11 +322,11 @@ def optimize_str(program: ReadableProgram[Code]) -> (ReadableProgram[Code], str)
         if code.instr.code == instr_config.START_STRING_INSTR:
             new_i, _ = run_until_string_end(i)
             if new_i == i:
-                raise Exception("hehe")
+                raise Exception("you sb!")
             else:
                 range_codes: List[Code] = program[i:new_i]
                 new_code = mk_push_str(range_codes)
-                print(new_code)
+                # print(new_code)
             i = new_i
         else:
             i += 1
@@ -340,12 +352,46 @@ def optimize_array(program: ReadableProgram[Code]) -> (ReadableProgram[Code], Li
         longest_array = list(res.values())
         return
 
-    mk_push_array(program)
+    def run_until_array_end(start: int, v: Optional[vm.VM] = None) -> int:
+        if v is None:
+            v = vm.VM()
+        start_depth = v.depth()
+        program[start].run(v)
+        last_prop_set = start
+        start += 1
+        try:
+            while v.depth() - start_depth < 4:
+                _code = program[start]
+                _code.run(v)
+                if _code.instr.code == instr_config.PROP_SET_NOPOP:
+                    last_prop_set = start
+                start += 1
+        except NotImplementedError:
+            v.pretty_print()
+            print('\t\tnot implement', program[start])
+            raise
+        except Exception as e:
+            print(e)
+            v.pretty_print()
+            pass
+        return last_prop_set
 
-    # while i < length:
-    #     code = program[i]
-    #     new_code = code
-    #     optimized_program.append(new_code)
+    while i < length:
+        code = program[i]
+        new_code = code
+        if code.instr.code == OPT_INSTR_CODES['str'] and isinstance(code.instr, OptIt) and code.human_ops[0] == 'Array':
+            new_i = run_until_array_end(i)
+            if new_i == i:
+                i += 1
+                pass
+                # raise Exception("you sb!")
+            else:
+                range_codes: List[Code] = program[i:new_i]
+                new_code = mk_push_array(range_codes)
+                i = new_i
+        else:
+            i += 1
+        optimized_program.append(new_code)
 
     return optimized_program, longest_array
 
@@ -361,6 +407,7 @@ def gen_real_program(source: str, patch_array: List[int]) -> List[int]:
         if v is not None:
             program.append(v)
         program.append(c)
+    print(program)
     print(len(program))
     return program
 
@@ -368,7 +415,7 @@ def gen_real_program(source: str, patch_array: List[int]) -> List[int]:
 if __name__ == '__main__':
     import os
     instrs = load_instrs(instr_def)
-    offsets = (0, 48)
+    offsets = (0, 48, 103, 17726, 18203, 19590, 20867, 20942)
     with open('program.json') as fin:
         program = json.load(fin)
         print('program length:', len(program))
@@ -384,13 +431,5 @@ if __name__ == '__main__':
             with open(f'offset_program/{offset}/longest_str.txt', 'w+') as f:
                 f.write(longest_str)
 
-    exit()
-
-    optimized_codes, longest_array = optimize_array(optimized_codes[9485:16285])
-    print(longest_array)
-    disassembler(
-        gen_real_program(longest_str, longest_array),
-        instrs
-    )
-    exit()
-
+            optimized_codes, _ = optimize_array(optimized_codes)
+            break
