@@ -81,6 +81,7 @@ config: Dict[int, InstrConfig] = cdd({
     61: InstrConfig('gt'),
     62: InstrConfig('init_stack:list'),
     64: InstrConfig('apply:method', stack_props={'dynamic': True, 'absolute': False}),
+    63: InstrConfig('combine:prop:2',func=vm.combine_prop),
     66: InstrConfig('chr:+top', func=vm.append_chr),
     67: InstrConfig('return:!!g')
 }, default_factory=InstrConfig)

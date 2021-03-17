@@ -6,39 +6,90 @@ T = TypeVar('T')
 UNDEFINED = None
 
 
-class LazyProp:
-    def __init__(self, obj, prop=None):
-        self.obj = obj
-        self.prop = prop
+class _LazyProp:
+    def __init__(self, parent=None, name=None, **props):
+        assert not (parent is None) ^ (name is None)
+        self.parent = parent
+        self.name = name
+        self._props = props
+        self._prototype = self.__class__
 
     def __getitem__(self, item):
-        return LazyProp(self, item)
-
-
-class _Window(LazyProp):
-
-    OBJ_MAPPING = {
-        'Array': lambda *values: {i: v for i, v in enumerate(values)}
-    }
-
-    def __init__(self):
-        self._data = {
-            'window': self
-        }
-        self._data.update(self.OBJ_MAPPING)
-
-    def __del__(self):
-        self._data.clear()  # for self reference
-
-    def __getitem__(self, item):
-        if item not in self._data:
-            raise IndexError(f"unknown item: {item}")
-        return self._data[item]
+        return _LazyProp(self, item)
 
     def __setitem__(self, key, value):
-        if key in self.OBJ_MAPPING:
-            raise NotImplementedError("modify default mapping is not supported!")
-        self._data[key] = value
+        self._props[key] = value
+        if isinstance(value, _LazyProp):
+            value.parent = self
+            value.name = key
+
+    def __str__(self):
+        return f'({self.str_relation()}){{{self.str_props()}}}'
+
+    def str_props(self):
+        return ', '.join(f"{k!s}:{v!s}" for k, v in self._props.items())
+
+    def str_relation(self):
+        if self.parent is None:
+            return 'global'
+        return f'{self.parent.str_relation()}::{self.name!s}'
+
+    def eval(self):
+        if self.parent is None:
+            item = {}
+        else:
+            if isinstance(self.parent, _LazyProp):
+                parent = self.parent.eval()
+            else:
+                parent = self.parent
+            item = parent[self.name]
+        for n, v in self._props.items():
+            if isinstance(v, _LazyProp):
+                v = v.eval()
+            item[n] = v
+        return item
+
+
+class _Array(_LazyProp):
+    def __init__(self, parent, name, **props):
+        super().__init__(parent, name)
+        for k, v in props.items():
+            self[int(k)] = v
+
+    def __setitem__(self, key, value):
+        key = int(key)
+        super().__setitem__(key, value)
+
+    def __str__(self):
+        return f'{{{self.str_props()}}}'
+
+    def __len__(self):
+        return len(self._props)
+
+    def __iter__(self):
+        return self._props.values()
+
+
+class _Function(_LazyProp):
+    def __init__(self, func, parent=None, name=None):
+        self._func = func
+        super().__init__(parent, name)
+
+    def __call__(self, *args, **kwargs):
+        return self._func(*args, **kwargs)
+
+
+class _Window(_LazyProp):
+
+    OBJ_MAPPING = {
+        'Array': lambda *values: _Array(parent=None, name=None, **{str(i): v for i, v in enumerate(values)})
+    }
+
+    def __init__(self, parent=None, name=None):
+        super().__init__(parent, name, window=self, **self.OBJ_MAPPING)
+
+    def __del__(self):
+        self._props.clear()  # for self reference
 
     def __class_getitem__(cls, item):
         if item not in cls.OBJ_MAPPING:
@@ -111,6 +162,9 @@ class VM:
     def __iter__(self):
         for i in self.stack:
             yield i
+
+    def array(self, *args, **kwargs):
+        return _Window['Array'](*args, **kwargs)
 
 
 VmFunc = NewType('VmFunc', Callable[[VM, List[int]], Any])
@@ -188,7 +242,14 @@ def shl(vm: VM, ops):
 
 
 def combine(vm: VM, ops):
-    vm.push([vm.pop(), vm.pop()][::-1])
+    # vm.push([vm.pop(), vm.pop()][::-1])
+    v = vm.pop()
+    vm.eval_set(lambda x: vm.array(x, v))
+
+
+def combine_prop(vm: VM, ops):
+    v = vm.pop()
+    vm.eval_set(lambda x: vm.array(x[0][x[1]], v))
 
 
 def prop_set_nopop(vm: VM, ops):
@@ -208,7 +269,7 @@ def prop_set_pop_val(vm: VM, ops):
 
 
 def window_prop_getter(vm: VM, ops):
-    vm.eval_set(lambda x: _Window['Array'](vm.window, x))
+    vm.eval_set(lambda x: vm.array(vm.window, x))
 
 
 def get_prop(vm: VM, ops):
@@ -221,4 +282,4 @@ def call(vm: VM, ops):
 
 
 def mk_array(vm: VM, ops):
-    vm.eval_set(lambda x: _Window['Array'](x))
+    vm.eval_set(lambda x: vm.array(x))
