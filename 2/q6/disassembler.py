@@ -162,7 +162,11 @@ class HumanOptCode(OptCode):
 
     def str_operands(self):
         if len(self.human_ops):
-            return ','.join(map(repr, self.human_ops))
+            human_readables = list(map(repr, self.human_ops))
+            if sum(map(len, human_readables)) > 100:
+                return '\n\t\t\t\t\t\t\t'.join(human_readables)
+            else:
+                return ','.join(human_readables)
         else:
             return super().str_operands()
 
@@ -264,7 +268,8 @@ def run_forever(v: vm.VM, start: int, program: List[Code]) -> int:
 
 
 OPT_INSTR_CODES = {
-    'str': 0
+    'str': 0,
+    'array': 1
 }
 
 
@@ -342,15 +347,22 @@ def optimize_array(program: ReadableProgram[Code]) -> (ReadableProgram[Code], Li
     longest_array = []
 
     def mk_push_array(segment: List[Code], v: Optional[vm.VM] = None):
-        nonlocal longest_array
-        if v is None:
-            v = vm.VM()
-        res = {}
-        v.push(res)
-        for c in segment:
-            c.run(v)
-        longest_array = list(res.values())
-        return
+        operands = [op for c in segment for op in c.operands]
+        v = run_segment(segment)
+        human_ops = list(v)
+
+        if v.depth() == 1:
+            name = 'push:array'
+        else:
+            name = 'push:array_se'
+
+        def _vm_func(vm_: vm.VM, ops: List[int]):
+            for op in human_ops:
+                vm_.push(op)
+
+        instr = OptIt(OPT_INSTR_CODES['array'], name, len(operands) + len(segment) - 1, StackOp(push=v.depth()),
+                      func=_vm_func)
+        return HumanOptCode(segment[0].pos, instr, operands, segment, human_ops)
 
     def run_until_array_end(start: int, v: Optional[vm.VM] = None) -> int:
         if v is None:
@@ -360,7 +372,7 @@ def optimize_array(program: ReadableProgram[Code]) -> (ReadableProgram[Code], Li
         last_prop_set = start
         start += 1
         try:
-            while v.depth() - start_depth < 4:
+            while v.depth() - start_depth < 10:
                 _code = program[start]
                 _code.run(v)
                 if _code.instr.code == instr_config.PROP_SET_NOPOP:
@@ -369,26 +381,28 @@ def optimize_array(program: ReadableProgram[Code]) -> (ReadableProgram[Code], Li
         except NotImplementedError:
             v.pretty_print()
             print('\t\tnot implement', program[start])
-            raise
+            if program[start].instr.code not in (23, 64, 1):
+                raise
+
         except Exception as e:
+            print('exception================')
             print(e)
             v.pretty_print()
-            pass
-        return last_prop_set
+            print('exception end ================')
+        return last_prop_set + 1
 
     while i < length:
         code = program[i]
         new_code = code
         if code.instr.code == OPT_INSTR_CODES['str'] and isinstance(code.instr, OptIt) and code.human_ops[0] == 'Array':
+            print('begin=======')
             new_i = run_until_array_end(i)
-            if new_i == i:
-                i += 1
-                pass
-                # raise Exception("you sb!")
-            else:
+            print(f'{i=}, {new_i=}')
+            if new_i != i + 1:
                 range_codes: List[Code] = program[i:new_i]
                 new_code = mk_push_array(range_codes)
-                i = new_i
+            i = new_i
+            print('end=======')
         else:
             i += 1
         optimized_program.append(new_code)
@@ -423,13 +437,14 @@ if __name__ == '__main__':
             codes = disassembler(program, instrs, offset)
             if not os.path.isdir(f'offset_program/{offset}'):
                 os.makedirs(f'offset_program/{offset}')
-            with open(f'offset_program/{offset}/program.vmasm.txt', 'w+') as fout:
+            with open(f'offset_program/{offset}/0-program.vmasm.txt', 'w+') as fout:
                 fout.write(str(codes))
             optimized_codes, longest_str = optimize_str(codes)
-            with open(f'offset_program/{offset}/optimized.str.vmasm.txt', 'w+') as fout:
+            with open(f'offset_program/{offset}/1-optimized.str.vmasm.txt', 'w+') as fout:
                 fout.write(str(optimized_codes))
-            with open(f'offset_program/{offset}/longest_str.txt', 'w+') as f:
+            with open(f'offset_program/{offset}/1-longest_str.txt', 'w+') as f:
                 f.write(longest_str)
 
             optimized_codes, _ = optimize_array(optimized_codes)
-            break
+            with open(f'offset_program/{offset}/2-optimized.array.wasm.txt', 'w+') as fout:
+                fout.write(str(optimized_codes))
