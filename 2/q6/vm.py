@@ -3,7 +3,17 @@ from typing import List, Callable, Any, NewType, TypeVar
 
 
 T = TypeVar('T')
-UNDEFINED = None
+
+
+class Undefined:
+    def __str__(self):
+        return 'Undefined'
+
+    def __repr__(self):
+        return self.__str__()
+
+
+UNDEFINED = Undefined()
 
 
 class LazyProp:
@@ -14,8 +24,14 @@ class LazyProp:
     def __getitem__(self, item):
         return LazyProp(self, item)
 
+    def __str__(self):
+        return f'{self.obj!s}::{self.prop!s}'
 
-class _Window(LazyProp):
+    def __repr__(self):
+        return self.__str__()
+
+
+class _Window:
 
     OBJ_MAPPING = {
         'Array': lambda *values: {i: v for i, v in enumerate(values)}
@@ -44,6 +60,9 @@ class _Window(LazyProp):
         if item not in cls.OBJ_MAPPING:
             raise NotImplementedError("not implement")
         return cls.OBJ_MAPPING[item]
+
+    def __str__(self):
+        return 'window'
 
 
 @dataclass
@@ -152,6 +171,11 @@ def dup(vm: VM, ops):
     vm.dup()
 
 
+def dup_n(vm: VM, ops):
+    p = vm.pop()
+    vm.push(LazyProp('stack', f'{p[0]}::0'))
+
+
 def swap(vm: VM, ops):
     vm.swap(ops[0])
 
@@ -187,8 +211,30 @@ def shl(vm: VM, ops):
     vm.eval_set(lambda x: x << a)
 
 
+def xor(vm: VM, ops):
+    a = vm.pop()
+    vm.eval_set(lambda x: x ^ a)
+
+
 def combine(vm: VM, ops):
     vm.push([vm.pop(), vm.pop()][::-1])
+
+
+def combine_prop(vm: VM, ops):
+    p = vm.pop()
+
+    def _(x):
+        try:
+            return [x[0][x[1]], p]
+        except:
+            return [LazyProp(LazyProp(x, 0), x[1]), p]
+
+    vm.eval_set(_)
+
+
+def combine_stack(vm: VM, ops):
+    v = vm.pop()
+    vm.eval_set(lambda x: [LazyProp('stack', f'{x}::0'), v])
 
 
 def prop_set_nopop(vm: VM, ops):
@@ -198,11 +244,20 @@ def prop_set_nopop(vm: VM, ops):
     vm.eval_set(set_prop, -2)
 
 
-def prop_set_pop_val(vm: VM, ops):
-    val = vm.pop()
+def prop_set_pop_propval(vm: VM, ops):
+    prop_val = vm.pop()
 
     def set_prop(x):
-        x[0][x[1]] = val
+        x[0][x[1]] = prop_val[0][prop_val[1]]
+
+    vm.eval_set(set_prop)
+
+
+def prop_set_pop_valpos(vm: VM, ops):
+    pos = vm.pop()
+
+    def set_prop(x):
+        x[0][x[1]] = LazyProp('stack', f'{pos[0]}::0')
 
     vm.eval_set(set_prop)
 
