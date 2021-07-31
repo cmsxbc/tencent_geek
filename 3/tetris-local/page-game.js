@@ -107,10 +107,10 @@
         this.uploadResVisible = true;
       },
       onDrop() {
-        this.shake = true;
-        setTimeout(() => {
-          this.shake = false;
-        }, 60);
+        // this.shake = true;
+        // setTimeout(() => {
+        //   this.shake = false;
+        // }, 60);
       },
       onGameStateChange(state) {
         Object.assign(this.gameState, state);
@@ -142,8 +142,8 @@
         this.$refs.canvas.height = canvasH * this.dpr;
       },
       popShare(score) {
-        this.game.pause();
-        this.$refs.share.show(typeof score === 'number' ? score : undefined);
+        // this.game.pause();
+        // this.$refs.share.show(typeof score === 'number' ? score : undefined);
       },
     },
   };

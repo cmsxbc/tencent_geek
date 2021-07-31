@@ -382,6 +382,9 @@
         case 'down':
           centerPos[1] += stepCount;
           break;
+        case 'up':
+          centerPos[1] -= stepCount;
+          break;
       }
 
       const { isValid, brickInfo } = this.getBrickPos(this.curBrickRawInfo, centerPos);

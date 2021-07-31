@@ -101,7 +101,7 @@
 
         // 按照对应模式的频率循环执行对应单步逻辑
         this[timerId] = setTimeout(() => {
-          this[stepFun]();
+          // this[stepFun]();
           this.startAutoRun();
         }, this[freqId]);
       }
@@ -114,13 +114,15 @@
      * @param {boolean} needUpdate 是否需要更新
      * @return {*}
      */
-    async playStep(dir = 'down', stepCount = 1, needUpdate = true) {
-      // 先执行位移
-      const { bottom } = this.tetris.move(dir, stepCount);
+    async playStep(dir = 'down', stepCount = 1, needUpdate = true, forceUpdate = false) {
+      let bottom = 0;
+      if (!forceUpdate) {
+          let { bottom } = this.tetris.move(dir, stepCount);
+      }
       let isStepValid = true;
 
       // 方块位移后触底，判定为方块落定
-      if (needUpdate && bottom === 0) {
+      if (forceUpdate || (needUpdate && bottom === 0)) {
         // 方块落定后，更新状态
         const { topTouched, isRoundLimited } = this.tetris.update();
 
@@ -167,6 +169,7 @@
       }
       if (status === 'starting') return;
       this.mode = 'replay';
+      this.pause();
       await this.reset();
       this.record = record;
       // this.replay();
@@ -444,7 +447,7 @@ ${brickStr}`;
      */
     onKeyDown(e) {
       this.keyDownHandler(e.keyCode);
-      if (this.keydownTimer || [37, 39, 40].indexOf(e.keyCode) === -1) return;
+      if (this.keydownTimer || [37, 38, 39, 40].indexOf(e.keyCode) === -1) return;
       this.keydownTimer = setInterval(() => {
         this.keyDownHandler(e.keyCode);
       }, 150);
@@ -501,13 +504,20 @@ ${brickStr}`;
           case 38:
             this.tetris.rotate();
             this.render();
+
             break;
 
-          // 空格键：下坠方块
+          // Shift：上移动
+          case 16:
+            this.playStep('up', 1, false);
+            break;
+
+          // 空格键：假定落定
           case 32:
-            this.tetris.drop();
-            this.playStep('down', 1);
-            this.opts.onDrop();
+            this.playStep('down', 0, true, true);
+            // this.tetris.drop();
+            // this.playStep('down', 1);
+            // this.opts.onDrop();
             break;
         }
       }
