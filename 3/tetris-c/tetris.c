@@ -211,21 +211,26 @@ const int SHAPES[SHAPE_TYPE_COUNT][SHAPE_STATE_COUNT][SHAPE_GRID_COUNT][2] = {
     }
 };
 
-struct _game_t {
-    int grids[Y_COUNT][X_COUNT] = {GRID_EMPTY};
-    int occupied = 0;
-    int v = RANDOM_V;
-    int brick_count = 0;
+struct game_t {
+    int grids[Y_COUNT][X_COUNT];
+    int occupied;
+    int v;
+    int brick_count;
 };
 
-typedef struct _game_t GAME_T;
+typedef struct game_t GAME_T;
 
-struct _brick_t {
-    int center_x = INIT_X;
-    int center_y = INIT_Y;
+struct brick_t {
+    int center_x;
+    int center_y;
 };
 
-typedef struct _brick_t BRICK_T;
+typedef struct brick_t BRICK_T;
+
+inline BRICK_T init_brick() {
+    BRICK_T brick = {INIT_X, INIT_Y};
+    return brick;
+}
 
 inline int get_next_random(int v) {
     return (v * RANDOM_A + RANDOM_C) % RANDOM_M;
@@ -233,17 +238,18 @@ inline int get_next_random(int v) {
 
 
 inline GAME_T init_game() {
-    GAME_T game;
+    GAME_T game = {{GRID_EMPTY}, 0, RANDOM_V, 0};
     return game;
 }
 
 inline GAME_T copy_game(GAME_T * p_game) {
-    GAME_T game;
+    GAME_T game = init_game();
     for (int y = 0; y < Y_COUNT; y ++) {
         for (int x = 0; x < X_COUNT; x ++) {
             game.grids[y][x] = p_game->grids[y][x];
         }
     }
+    return game;
 }
 
 int main() {
