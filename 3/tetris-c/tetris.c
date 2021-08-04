@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 
 #define Y_COUNT 20
@@ -202,7 +203,6 @@ const int SHAPES[SHAPE_TYPE_COUNT * SHAPE_STATE_COUNT][SHAPE_GRID_COUNT][2] = {
 struct game_t {
     int grids[Y_COUNT][X_COUNT];
     int occupied;
-    int v;
     int brick_count;
 };
 
@@ -225,7 +225,7 @@ inline int get_next_random(int v) {
 }
 
 inline GAME_T init_game() {
-    GAME_T game = {{GRID_EMPTY}, 0, RANDOM_V, 0};
+    GAME_T game = {{GRID_EMPTY}, 0, 0};
     return game;
 }
 
@@ -249,6 +249,35 @@ inline bool can_place(GAME_T *p_game, BRICK_T *p_brick, int (*p_shape)[SHAPE_GRI
     }
     return true;
 }
+
+int* get_shape_series() {
+    static int * shape_series = NULL;
+    if (shape_series == NULL) {
+        shape_series = (int *) calloc(MAX_BRICK_COUNT, sizeof(int));
+        int v = RANDOM_V;
+        int shape_index = 0;
+        int index_limit[7] = {1, 4, 7, 11, 16, 22, 29};
+        for (int i = 0; i < MAX_BRICK_COUNT; i++) {
+            v = get_next_random(v);
+            while (v % 29 <= index_limit[shape_index]) {
+                shape_index ++;
+            }
+            shape_index = shape_index * 4 + v % 4;
+            shape_series[i] = shape_index;
+        }
+    }
+    return shape_series;
+}
+
+int rotate(int shape_index) {
+    if (shape_index % 4 >= 3) {
+        shape_index -= 3;
+    } else {
+        shape_index += 1;
+    }
+    return shape_index;
+}
+
 
 int main() {
 
