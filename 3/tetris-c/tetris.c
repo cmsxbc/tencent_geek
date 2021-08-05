@@ -10,7 +10,7 @@ const int INIT_Y = 0;
 
 const int MAX_BRICK_COUNT = 10000;
 const int GRID_EMPTY = 0;
-const int GRID_SETTED = 1;
+const int GRID_SET = 1;
 
 const int RANDOM_A = 27073;
 const int RANDOM_C = 17713;
@@ -19,9 +19,10 @@ const int RANDOM_V = 12358;
 
 #define SHAPE_TYPE_COUNT 7
 #define SHAPE_STATE_COUNT 4
+#define SHAPE_TOTAL_COUNT 28
 #define SHAPE_GRID_COUNT 4
 
-const int SHAPES[SHAPE_TYPE_COUNT * SHAPE_STATE_COUNT][SHAPE_GRID_COUNT][2] = {
+const int SHAPES[SHAPE_TOTAL_COUNT][SHAPE_GRID_COUNT][2] = {
     // I 型
     {
         {0, 0},
@@ -204,51 +205,17 @@ struct game_t {
     int grids[Y_COUNT][X_COUNT];
     int occupied;
     int brick_count;
+    int brick_shape_index;
+    int brick_center_x;
+    int brick_center_y;
 };
 
 typedef struct game_t GAME_T;
-
-struct brick_t {
-    int center_x;
-    int center_y;
-};
-
-typedef struct brick_t BRICK_T;
-
-inline BRICK_T init_brick() {
-    BRICK_T brick = {INIT_X, INIT_Y};
-    return brick;
-}
 
 inline int get_next_random(int v) {
     return (v * RANDOM_A + RANDOM_C) % RANDOM_M;
 }
 
-inline GAME_T init_game() {
-    GAME_T game = {{GRID_EMPTY}, 0, 0};
-    return game;
-}
-
-inline GAME_T copy_game(GAME_T * p_game) {
-    GAME_T game = init_game();
-    for (int y = 0; y < Y_COUNT; y ++) {
-        for (int x = 0; x < X_COUNT; x ++) {
-            game.grids[y][x] = p_game->grids[y][x];
-        }
-    }
-    return game;
-}
-
-inline bool can_place(GAME_T *p_game, BRICK_T *p_brick, int (*p_shape)[SHAPE_GRID_COUNT][2]) {
-    for (int pos = 0; pos < SHAPE_GRID_COUNT; pos++) {
-        int x = (*p_shape)[pos][0] + p_brick->center_x;
-        int y = (*p_shape)[pos][1] + p_brick->center_y;
-        if (p_game->grids[y][x] != GRID_EMPTY) {
-            return false;
-        }
-    }
-    return true;
-}
 
 int* get_shape_series() {
     static int * shape_series = NULL;
@@ -269,6 +236,35 @@ int* get_shape_series() {
     return shape_series;
 }
 
+
+inline GAME_T init_game() {
+    GAME_T game = {{GRID_EMPTY}, 0, 0, get_shape_series()[0], INIT_X, INIT_Y};
+    return game;
+}
+
+inline GAME_T copy_game(GAME_T * p_game) {
+    GAME_T game = init_game();
+    for (int y = 0; y < Y_COUNT; y ++) {
+        for (int x = 0; x < X_COUNT; x ++) {
+            game.grids[y][x] = p_game->grids[y][x];
+        }
+    }
+    return game;
+}
+
+
+inline void print_game(GAME_T * p_game) {
+    printf("|----------|\n");
+    for (int y = 0; y < Y_COUNT; y++) {
+        printf("|");
+        for (int x = 0; x < X_COUNT; x ++) {
+            printf("%c", p_game->grids[y][x] ? '#' : ' ');
+        }
+        printf("|\n");
+    }
+}
+
+
 int rotate(int shape_index) {
     if (shape_index % 4 >= 3) {
         shape_index -= 3;
@@ -276,6 +272,11 @@ int rotate(int shape_index) {
         shape_index += 1;
     }
     return shape_index;
+}
+
+
+void do_rotate(GAME_T *p_game) {
+    p_game->brick_shape_index = rotate(p_game->brick_shape_index);
 }
 
 
