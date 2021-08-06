@@ -223,13 +223,34 @@ enum OP_TYPE {
 };
 
 
+const char OP_NAMES[10] = "CLDUR)N";
+
+
+union row_t {
+    // struct {
+    //     u_int16_t c9: 1;
+    //     u_int16_t c8: 1;
+    //     u_int16_t c7: 1;
+    //     u_int16_t c6: 1;
+    //     u_int16_t c5: 1;
+    //     u_int16_t c4: 1;
+    //     u_int16_t c3: 1;
+    //     u_int16_t c2: 1;
+    //     u_int16_t c1: 1;
+    //     u_int16_t c0: 1;
+    // } cols;
+    u_int16_t v;
+};
+typedef union row_t ROW_T;
+
+
 struct game_t {
-    int (*p_grids)[Y_COUNT][X_COUNT];
-    int occupied;
-    int brick_count;
-    int shape_series_index;
-    int brick_center_x;
-    int brick_center_y;
+    ROW_T *p_grids;
+    u_int16_t brick_count;
+    u_int8_t occupied;
+    u_int8_t shape_index;
+    u_int8_t brick_center_x;
+    u_int8_t brick_center_y;
     int score;
 };
 
@@ -252,7 +273,7 @@ static inline int* get_shape_series() {
             while (v % 29 > index_limit[shape_index]) {
                 shape_index ++;
             }
-            shape_index = shape_index * 4 + v % 4;
+            shape_index = shape_index * 4 + i % 4;
             shape_series[i] = shape_index;
         }
     }
@@ -262,12 +283,8 @@ static inline int* get_shape_series() {
 
 static inline GAME_T init_game() {
     GAME_T game = {NULL, 0, 0, get_shape_series()[0], INIT_X, INIT_Y, 0};
-    game.p_grids = (int (*)[Y_COUNT][X_COUNT])calloc(X_COUNT * Y_COUNT, sizeof(int));
-    for (int y = 0; y < Y_COUNT; y ++) {
-        for (int x = 0; x < X_COUNT; x ++) {
-            (*game.p_grids)[y][x] = GRID_EMPTY;
-        }
-    }
+    game.p_grids = (ROW_T *) calloc(Y_COUNT, sizeof(ROW_T));
+    memset(game.p_grids, GRID_EMPTY, sizeof(ROW_T) * Y_COUNT);
     return game;
 }
 
@@ -280,11 +297,9 @@ static inline void free_game(GAME_T *p_game) {
 static inline GAME_T copy_game(GAME_T * p_game) {
     GAME_T game = init_game();
     for (int y = 0; y < Y_COUNT; y ++) {
-        for (int x = 0; x < X_COUNT; x ++) {
-            (*game.p_grids)[y][x] = (*p_game->p_grids)[y][x];
-        }
+        game.p_grids[y] = p_game->p_grids[y];
     }
-    game.shape_series_index = p_game->shape_series_index;
+    game.shape_index = p_game->shape_index;
     game.brick_center_x = p_game->brick_center_x;
     game.brick_center_y = p_game->brick_center_y;
     game.brick_count = p_game->brick_count;
@@ -311,20 +326,29 @@ static inline void print_shape(int shape_index) {
 
 static inline void print_game(GAME_T * p_game) {
     printf("brick_count:%d\n", p_game->brick_count);
-    printf("shape_series_index:%d\n", p_game->shape_series_index);
-    print_shape(p_game->shape_series_index);
+    printf("shape_series_index:%d\n", p_game->shape_index);
+    printf("score:%d\n", p_game->score);
+    printf("occupied:%d\n", p_game->occupied);
+    // print_shape(p_game->shape_index);
     printf(" _ _ _ _ _ _ _ _ _ _ \n");
     for (int y = 0; y < Y_COUNT; y++) {
         printf("|");
         for (int x = 0; x < X_COUNT; x ++) {
             char c = ' ';
-            if ((*p_game->p_grids)[y][x] == GRID_SET) {
+            if (p_game->p_grids[y].v & (1 << x)) {
                 c = '#';
-            } else {
-                int shape_idx = p_game->shape_series_index;
+                int shape_idx = p_game->shape_index;
                 for (int i = 0; i < SHAPE_GRID_COUNT; i++) {
                     if (x == SHAPES[shape_idx][i][0] + p_game->brick_center_x && y == SHAPES[shape_idx][i][1] + p_game->brick_center_y) {
-                        c = '#';
+                        c = 'x';
+                        break;
+                    }
+                }
+            } else {
+                int shape_idx = p_game->shape_index;
+                for (int i = 0; i < SHAPE_GRID_COUNT; i++) {
+                    if (x == SHAPES[shape_idx][i][0] + p_game->brick_center_x && y == SHAPES[shape_idx][i][1] + p_game->brick_center_y) {
+                        c = '*';
                         break;
                     }
                 }
@@ -335,19 +359,124 @@ static inline void print_game(GAME_T * p_game) {
     }
 }
 
-static inline void next_brick(GAME_T * p_game) {
+
+static inline bool valid(GAME_T *p_game) {
+    for (int i = 0; i < SHAPE_GRID_COUNT; i++) {
+        int x = p_game->brick_center_x + SHAPES[p_game->shape_index][i][0];
+        int y = p_game->brick_center_y + SHAPES[p_game->shape_index][i][1];
+        if ((p_game->p_grids[y].v & (1 << x)) == GRID_SET) {
+            return false;
+        }
+    }
+    return true;
+}
+
+
+const static u_int8_t COL_COUNT_MAPPING[1<<X_COUNT] = {
+        0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4, 1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5, 1,
+        2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5, 2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6, 1, 2,
+        2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5, 2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6, 2, 3, 3,
+        4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6, 3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7, 1, 2, 2, 3,
+        2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5, 2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6, 2, 3, 3, 4, 3,
+        4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6, 3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7, 2, 3, 3, 4, 3, 4,
+        4, 5, 3, 4, 4, 5, 4, 5, 5, 6, 3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7, 3, 4, 4, 5, 4, 5, 5,
+        6, 4, 5, 5, 6, 5, 6, 6, 7, 4, 5, 5, 6, 5, 6, 6, 7, 5, 6, 6, 7, 6, 7, 7, 8, 1, 2, 2, 3, 2, 3, 3, 4,
+        2, 3, 3, 4, 3, 4, 4, 5, 2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6, 2, 3, 3, 4, 3, 4, 4, 5, 3,
+        4, 4, 5, 4, 5, 5, 6, 3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7, 2, 3, 3, 4, 3, 4, 4, 5, 3, 4,
+        4, 5, 4, 5, 5, 6, 3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7, 3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5,
+        6, 5, 6, 6, 7, 4, 5, 5, 6, 5, 6, 6, 7, 5, 6, 6, 7, 6, 7, 7, 8, 2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5,
+        4, 5, 5, 6, 3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7, 3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5,
+        6, 6, 7, 4, 5, 5, 6, 5, 6, 6, 7, 5, 6, 6, 7, 6, 7, 7, 8, 3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6,
+        6, 7, 4, 5, 5, 6, 5, 6, 6, 7, 5, 6, 6, 7, 6, 7, 7, 8, 4, 5, 5, 6, 5, 6, 6, 7, 5, 6, 6, 7, 6, 7, 7,
+        8, 5, 6, 6, 7, 6, 7, 7, 8, 6, 7, 7, 8, 7, 8, 8, 9, 1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5,
+        2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6, 2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6, 3,
+        4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7, 2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6, 3, 4,
+        4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7, 3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7, 4, 5, 5,
+        6, 5, 6, 6, 7, 5, 6, 6, 7, 6, 7, 7, 8, 2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6, 3, 4, 4, 5,
+        4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7, 3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7, 4, 5, 5, 6, 5,
+        6, 6, 7, 5, 6, 6, 7, 6, 7, 7, 8, 3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7, 4, 5, 5, 6, 5, 6,
+        6, 7, 5, 6, 6, 7, 6, 7, 7, 8, 4, 5, 5, 6, 5, 6, 6, 7, 5, 6, 6, 7, 6, 7, 7, 8, 5, 6, 6, 7, 6, 7, 7,
+        8, 6, 7, 7, 8, 7, 8, 8, 9, 2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6, 3, 4, 4, 5, 4, 5, 5, 6,
+        4, 5, 5, 6, 5, 6, 6, 7, 3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7, 4, 5, 5, 6, 5, 6, 6, 7, 5,
+        6, 6, 7, 6, 7, 7, 8, 3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7, 4, 5, 5, 6, 5, 6, 6, 7, 5, 6,
+        6, 7, 6, 7, 7, 8, 4, 5, 5, 6, 5, 6, 6, 7, 5, 6, 6, 7, 6, 7, 7, 8, 5, 6, 6, 7, 6, 7, 7, 8, 6, 7, 7,
+        8, 7, 8, 8, 9, 3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7, 4, 5, 5, 6, 5, 6, 6, 7, 5, 6, 6, 7,
+        6, 7, 7, 8, 4, 5, 5, 6, 5, 6, 6, 7, 5, 6, 6, 7, 6, 7, 7, 8, 5, 6, 6, 7, 6, 7, 7, 8, 6, 7, 7, 8, 7,
+        8, 8, 9, 4, 5, 5, 6, 5, 6, 6, 7, 5, 6, 6, 7, 6, 7, 7, 8, 5, 6, 6, 7, 6, 7, 7, 8, 6, 7, 7, 8, 7, 8,
+        8, 9, 5, 6, 6, 7, 6, 7, 7, 8, 6, 7, 7, 8, 7, 8, 8, 9, 6, 7, 7, 8, 7, 8, 8, 9, 7, 8, 8, 9, 8, 9, 9,
+        10
+};
+
+
+static inline u_int8_t calc_occupied(GAME_T * p_game) {
+    u_int8_t occupied = 0;
+    for (int y = 0; y < Y_COUNT; y++) {
+        occupied += COL_COUNT_MAPPING[p_game->p_grids[y].v];
+    }
+    return occupied;
+}
+
+static inline bool next_brick(GAME_T * p_game) {
+    static u_int8_t score_rate[5] = {0, 1, 3, 6, 10};
+    u_int8_t cleared_y[4] = {255, 255, 255, 255};
+    int clear = 0;
+    for (int i = 0; i < SHAPE_GRID_COUNT; i++) {
+        int x = p_game->brick_center_x + SHAPES[p_game->shape_index][i][0];
+        int y = p_game->brick_center_y + SHAPES[p_game->shape_index][i][1];
+        if (p_game->p_grids[y].v & (1 << x)) {
+            return false;
+        }
+        p_game->p_grids[y].v |= 1 << x;
+    }
+    if (p_game->p_grids[0].v > 0) {
+        return false;
+    }
+    for (int i = 0; i < SHAPE_GRID_COUNT; i++) {
+        int y = p_game->brick_center_y + SHAPES[p_game->shape_index][i][1];
+        if (p_game->p_grids[y].v == (1 << X_COUNT) - 1) {
+            int j = clear - 1;
+            cleared_y[clear++] = y;
+            while (j >= 0) {
+                if (y < cleared_y[j]) {
+                    cleared_y[j+1] = cleared_y[j];
+                    cleared_y[j] = y;
+                    j --;
+                } else {
+                    break;
+                }
+            }
+            p_game->p_grids[y].v = GRID_EMPTY;
+        }
+    }
+    for (int i = 0; i < clear; i++) {
+        // printf("cleared: %d\n", cleared_y[i]);
+        for (int y = cleared_y[i]; y > 0; y --) {
+            p_game->p_grids[y].v = p_game->p_grids[y-1].v;
+        }
+        p_game->p_grids[0].v = GRID_EMPTY;
+    }
+    p_game->score += score_rate[clear] * (p_game->occupied + 4);
+    p_game->occupied -= clear * X_COUNT - 4;
+    u_int8_t occupied = calc_occupied(p_game);
+    if (p_game->occupied != occupied) {
+        printf("something wrong for occupied %d != %d\n", p_game->occupied, occupied);
+    }
+    p_game->brick_count ++;
+    p_game->shape_index = get_shape_series()[p_game->brick_count];
+    p_game->brick_center_x = INIT_X;
+    p_game->brick_center_y = INIT_Y;
+    return valid(p_game);
 }
 
 
 static inline void rotate(GAME_T *p_game, int n) {
-    int shape_index = p_game->shape_series_index;
-    n = n % 4;
-    if (shape_index % 4 >= 3) {
-        shape_index -= (4 - n) % 4;
-    } else {
-        shape_index += n;
-    }
-    p_game->shape_series_index = shape_index;
+    u_int8_t shape_offset = p_game->shape_index % 4;
+    u_int8_t shape_base = p_game->shape_index - shape_offset;
+    u_int8_t shape_index = shape_base + (shape_offset + n) % 4;
+    // printf("rotate (%d): %d -> %d\n", n, p_game->shape_index, shape_index);
+    // print_shape(p_game->shape_index);
+    // print_shape(shape_index);
+    p_game->shape_index = shape_index;
 }
 
 
@@ -371,6 +500,7 @@ static inline void move_r(GAME_T *p_game, int n) {
     p_game->brick_center_x += n;
 }
 
+
 static inline void move_u(GAME_T *p_game, int n) {
     p_game->brick_center_y -= n;
 }
@@ -388,11 +518,13 @@ static inline void operate(GAME_T *p_game, OPERATION_T op) {
     funcs[op.s.type](p_game, op.s.count);
 }
 
+
 static inline void operate_(GAME_T *p_game, OPERATION_T op) {
     OPERATION_T inv_op = op;
     inv_op.s.type = OP_N - 1 - op.s.type;
     operate(p_game, inv_op);
 }
+
 
 static inline void print_all_shape_series() {
     int * shape_series = get_shape_series();
@@ -402,8 +534,92 @@ static inline void print_all_shape_series() {
     }
 }
 
+
+static inline void run_game(GAME_T *p_game, OPERATION_T *operations, int op_count) {
+
+}
+
+
+static inline bool run_game_string(GAME_T *p_game, char *op_str, int len) {
+    char op_name;
+    int offset = 0;
+    int count;
+    OPERATION_T op;
+    int op_count = 0;
+    while (offset < len) {
+        if (sscanf(op_str+offset, "%c", &op_name) <= 0) {
+            printf("something wrong while read string at %d: %s\n", offset, op_str+offset);
+            return false;
+        }
+        if (offset == 0 && op_name == 'N' && op_str[offset+1] == ',') {
+            offset += 2;
+            continue;
+        }
+        switch (op_name) {
+            case 'N':
+                op.s.type = OP_N;
+                break;
+            case 'C':
+                op.s.type = OP_C;
+                break;
+            case 'L':
+                op.s.type = OP_L;
+                break;
+            case 'R':
+                op.s.type = OP_R;
+                break;
+            case 'D':
+                op.s.type = OP_D;
+                break;
+            default:
+                printf("unknown op type %c at %d: %s\n", op_name, offset, op_str+offset);
+                return false;
+        }
+        offset ++;
+        count = 0;
+        while(op_str[offset+count] != ',' && offset + count < len) {
+            count ++;
+        }
+        if (!((op_name == 'N') ^ (count > 0))) {
+            printf("op:%c, count:%d at %d:%s\n", op_name, count, offset, op_str+offset);
+            return false;
+        }
+        if (op_name == 'N') {
+            if (next_brick(p_game) == false) {
+                printf("next_brick not valid at %d\n", offset);
+                return false;
+            }
+        } else {
+            char * end = op_str + offset + count;
+            op.s.count = strtol(op_str+offset, &end, 10);
+            if (end != op_str + offset + count) {
+                return false;
+            }
+            operate(p_game, op);
+            if (valid(p_game) == false) {
+                printf("op:%c%d not valid\n", OP_NAMES[op.s.type], op.s.count);
+                return false;
+            }
+        }
+        op_count ++;
+        // printf("step %d\n", op_count++);
+        // print_game(p_game);
+        offset += count + 1;
+    }
+    printf("total steps: %d\n", op_count);
+    return true;
+}
+
+
 int main() {
-    print_all_shape_series();
+    // print_all_shape_series();
     GAME_T game = init_game();
+    print_game(&game);
+    char *ops = "N,D3,C1,L3,D15,N,D1,L1,D18,L1,N,D1,L2,D17,N,D1,R1,D17,N,D1,R1,C2,D1,C1,R2,D1,R1,D16,N,D1,R2,C1,D17,N,D1,C1,L2,R2,D1,R3,D14,N,D1,C1,R2,D1,R2,D14,N,C1,D1,L3,D15,N,D1,L2,D15,N,D1,C1,D1,R1,D13,N,D1,L1,D1,L1,R1,D12,N,D1,C1,L3,D13,N,D1,L3,D11,N,D1,R5,D17,N,R1,D1,C1,D1,L1,D1,L2,D1,R1,D13,N,D1,C1,L3,D13,N,C1,D1,C1,R2,D1,R1,D16,N,D1,R2,L1,D16,N,D1,C3,R1,D1,R4,D15,N,D1,R2,D1,C1,L3,D1,R1,D14,N,R4,D18,N,R1,D1,R2,D16,N,D1,C1,D1,C3,D1,C2,R3,C1,D1,C1,R2,D14,N,D1,C1,R1,D17,N,D1,R1,D1,R2,D15,N,D1,C1,D1,R1,D1,R1,C1,L2,D1,L1,D13,N,C1,D1,C2,D1,R1,D1,C2,D1,C2,D1,R3,D10,N,D1,R1,D1,R1,D14,N,D1,L3,D15,N,C1,L1,D15,N,C1,D1,L4,D13,N,D1,C1,L1,D12,N,D1,R2,D13,N,R1,C1,D1,R3,D1,R1,L1,C1,D12,N,C1,D1,C2,R1,D1,L1,D11,N,D1,R1,C1,D1,R3,D11,N,D13,N,D1,C1,L2,D12,N,D1,R2,C1,D1,L5,D11,N,D1,C1,R1,D1,R2,D11,N,D1,L2,D1,R2,D1,R1,D9,N,D1,C1,D11,N,L1,D1,L2,D10,N,L2,D11,N,D1,C1,R5,D11,N,D1,L1,D1,L1,R2,D11,N,L3,D12,N,C1,D1,C2,R2,D1,R3,D12,N,D1,R2,D13,N,D1,L2,D12,N,D1,C1,L2,D1,L2,D9,N,D1,R3,D1,L1,D1,L2,D9,N,D2,L1,D1,C3,L1,D1,L1,D7,N,D2,R1,L1,D1,R4,D1,L1,D9,N,R3,D1,R2,D11,N,D1,R2,D1,R1,D11,N,D1,R1,D11,N,R1,D1,C2,R1,D10,N,R2,D1,R2,D9,N,D1,L2,D11,N,D1,C1,R4,D1,R1,D11,N,D1,C1,D1,L2,D12,N,D2,L1,D13,N,D1,C1,L2,D1,L1,D12,N,D1,C1,D1,C3,D1,L2,D10,N,D1,C1,D1,L3,D10,N,D1,L3,D9,N,R2,D1,L1,D14,N,D1,R1,C1,R2,D1,R1,D1,L2,D1,L1,D9,N,D1,R5,D13,N,R1,D1,R1,C1,D1,R1,D14,N,D1,C1,D13,N,D1,R1,D13,N,D1,R2,D1,C1,D1,L3,D10,N,D12,N,R3,D1,C1,R2,D14,N,D1,R4,D13,N,D2,L1,C1,L2,D11,N,L1,D13,N,R1,D1,C1,R1,D1,R3,D11,N,D1,R3,D11,N,L1,D1,R1,D12,N,C1,D1,L1,C1,D1,C2,L1,D1,C1,R1,D1,L1,D8,N,C1,D1,C2,D10,N,D1,C2,L3,D1,L1,R2,D1,R2,C1,R1,D1,R1,D7,N,C1,D1,L1,C1,L3,D11,N,R2,D1,C1,L1,D1,L1,C1,L2,D8,N,R2,D1,C1,R3,D11,N,D1,R4,D1,R1,D10,N,D1,R1,C1,D1,R2,D11,N,D1,C2,D1,C2,D1,C2,D1,C2,L1,C1,L1,D1,L2,D8,N,D1,R1,D1,C2,D1,C1,L2,D10,N,R2,D2,L1,C1,L3,D10,N,D1,R1,D11,N,D1,R1,D1,C4,D1,R1,D10,N,R2,D1,R3,D14,N,D1,R3,D1,R2,D11,N,D14,N,C1,D1,C2,R1,D1,R2,D11,N,R1,D14,N,D1,C1,D1,C1,R5,D11,N,L2,D1,C1,L1,D13,N,D1,L1,D13,N,D1,C1,D1,L3,D12,N,D1,R2,D1,R1,D12,N,D1,R4,D1,R1,D10,N,D1,C1,L1,C1,D1,L2,R1,D11,N,D1,C1,R1,D13,N,D1,R1,C1,D1,R1,D11,N,D3,C1,L1,D11,N,C1,D14,N,D1,R1,C2,D1,C1,R1,D1,R1,D12,N,D1,L3,D14,N,R1,D16,N,D1,C3,L1,D13,N,D1,C1,R1,D1,R3,D13,N,D1,L1,D1,L2,D13,N,D1,R1,D14,N,C1,D1,C1,D1,C2,D1,L2,D11,N,R2,D1,R1,C1,D1,L1,D11,N,D1,R1,D1,L2,C1,D1,C1,L3,D10,N,L1,D13,N,C1,D1,L3,D10,N,R2,D1,C1,D1,R1,D1,R1,D1,L4,D7,N,R1,D1,C1,R3,D13,N,R1,D1,R4,D12,N,R1,D1,R3,D11,N,C1,D1,L1,D9,N,D1,L3,D1,L1,D9,N,L1,D1,L3,D8,N,R1,D1,C1,D1,C2,D1,C2,L1,D1,L2,R3,D1,R4,D5,N,D1,C1,R2,D1,R1,D11,N,R1,D1,R2,D1,C3,D1,L1,D1,C1,R1,D9,N,D1,C3,R1,D12,N,D2,R2,D1,R1,D10,N,C1,D1,C1,D1,C3,D11,N,D1,L1,D11,N,D1,R1,C1,D1,C2,R1,D11,N,D1,R1,D12,N,D1,R3,D1,R2,D11,N,D2,L4,D12,N,C1,D1,L1,D12,N,L1,D1,L3,D11,N,C1,R2,D1,R2,D13,N,D1,R1,D1,C1,D1,C1,L2,D10,N,R2,D15,N,D14,N,D2,R1,D12,N,R1,C1,D1,R2,C2,D1,R1,C1,D12,N,D1,L1,C2,D1,C1,L1,D13,N,D1,C1,D1,R3,D14,N,D1,L2,C2,D1,C1,L2,D1,R3,C1,D1,C2,R1,D11,N,D1,L3,D14,N,D1,C1,L2,D1,L1,D11,N,D1,C3,D1,C2,D1,L1,D11,N,D1,R2,D13,N,R1,D1,R1,L1,D1,L4,D9,N,R1,D1,C1,D1,C1,D2,C1,D1,L1,D8,N,D3,R1,D9,N,D2,L1,D9,N,D1,R1,D9,N,R1,D1,R1,C1,R3,D13,N,D1,C2,D1,C1,R3,D1,R2,D11,N,D1,C2,D1,C1,R3,D12,N,D1,R5,D12,N,R2,D1,L2,D1,L1,D10,N,D1,C2,D1,L1,D1,L1,D1,C2,D1,L2,D7,N,D1,R2,D1,R1,D9,N,D1,R1,D9,N,D1,R1,D2,L2,R1,D1,R2,D6,N,D1,R5,D9,N,D1,C2,D1,C1,D1,C1,R1,D1,R1,C3,R1,D1,R2,D3,N,D1,L1,C2,D1,C1,L1,C1,D9,N,D1,L2,C1,D1,R2,D8,N,D1,C2,D1,L1,C3,L1,D1,L1,D8,N,D1,C1,D1,R1,C1,R1,D8,N,C1,D1,L4,D8,N,D1,C1,L2,D9,N,D1,R4,D1,R1,D9,N,D1,L1,D1,R1,C1,R1,D1,R1,D8,N,D1,C1,D1,C2,L1,D10,N,D1,L2,D14,N,D1,R1,L1,D1,R1,D12,N,D2,C1,L2,D1,C1,L1,D12,N,L1,D13,N,D1,C2,D1,C2,D1,R3,C1,D1,R1,L1,D2,C3,R1,D8,N,D1,R1,C2,D1,C2,L3,D1,L2,D11,N,C1,D1,L1,C1,L2,D12,N,D1,L1,D2,L3,D8,N,L2,D1,L2,D8,N,D1,R1,C1,D1,C3,D1,L1,D1,C2,D1,R3,D9,N,D1,C1,R1,D12,N,R2,D1,L1,D2,R2,D9,N,R3,D1,R2,D12,N,D1,C2,D1,C1,L1,D13,N,D2,R4,D13,N,D1,L1,D13,N,D2,R2,D13,N,R1,D1,R3,D13,N,D1,C1,R1,D13,N,D1,R2,D1,R1,D13,N,D1,L2,D1,L2,D2,R3,C1,D11,N,D1,R1,C2,D1,C2,D1,C1,R2,D1,R1,D11,N,D1,C3,D1,L2,D1,C1,L2,D11,N,D1,R1,D1,R1,D12,N,D1,C1,D1,L1,D1,R1,D12,N,D1,L2,D13,N,D1,R1,C1,D1,R4,D11,N,C1,D1,R3,D12,N,D3,C1,D1,L1,D9,N,D1,C1,D1,C3,D1,R1,D10,N,D1,C1,D12,N,D1,C1,D1,L3,D12,N,D3,C1,R3,D1,R2,L2,D9,N,C1,D1,C2,D1,L1,C2,D11,N,R1,D1,R4,D13,N,C1,D2,R1,D12,N,D1,C1,D1,C4,D2,L2,D1,L2,D9,N,D1,C3,L1,D1,R2,D1,R3,D10,N,D1,C1,D1,C1,L2,D1,L1,D11,N,D1,R1,D12,N,R3,D13,N,D1,R1,D1,L2,D12,N,R1,D1,C1,D1,L2,R2,D1,R2,D11,N,D1,C2,D1,C2,D1,C2,L2,D11,N,D1,R3,C1,D1,C1,L3,D1,L4,D10,N,D1,R1,D12,N,L1,D2,C1,R1,D1,R5,D11,N,D1,C1,R1,D1,R1,D11,N,D1,L1,D1,C2,D1,C2,L2,D9,N,D1,L1,C1,D13,N,R1,D1,R2,C1,D1,R2,D12,N,D1,C1,R2,D1,R1,C1,R1,D1,L1,D11,N,D1,L1,C1,D14,N,D1,L1,D1,R1,D13,N,R2,D1,R2,D15,N,D1,R1,C1,D1,C2,R1,D1,R2,D11,N,D1,C2,D1,L3,D13,N,D1,L1,D14,N,D1,R1,C1,D1,R2,D13,N,D1,L1,R1,D14,N,D1,C1,L1,D13,N,D1,C1,L1,C1,D1,C1,R3,D1,R3,D9,N,D1,C1,R1,D1,R2,D12,N,D1,R1,D12,N,D1,C1,D11,N,D1,R1,D1,R2,D9,N,D1,C1,D1,C2,D1,R3,D1,L3,D6,N,C1,D1,R1,D8,N,D1,L4,D13,N,D1,L1,D1,L1,D12,N,D1,C1,D1,C2,R2,D1,C1,R2,D11,N,L2,D1,C2,D1,L2,D11,N,L1,D1,L1,R2,D1,R3,D9,N,D1,C1,D1,C1,L2,D10,N,R1,D1,C2,D1,C1,R1,D9,N,D1,C1,D1,R5,D8,N,D1,L1,D11,N,D1,L3,D1,L1,D9,N,D1,L2,D1,R2,D2,R4,D6,N,D1,R1,C1,D11,N,C1,D1,L1,D1,C1,L1,D9,N,D1,C2,D1,R3,D9,N,D1,L1,D1,C1,L3,D9,N,D1,C1,L1,C1,D1,C1,D1,C1,L2,D6,N,D11,N,D1,L1,D1,R1,C1,R2,D8,N,C1,D1,C1,D1,C1,L1,D1,C2,D2,C1,R3,D4,N,D1,C1,L1,D9,N,D1,R3,D1,R2,D10,N,D1,L1,R2,D1,C1,L1,C1,D1,L3,D8,N,D2,C1,D1,L1,D9,N,D2,R4,D1,L4,D1,L1,D6,N,D1,L2,D1,R2,D10,N,D1,R2,C1,D1,C1,L2,D1,L4,D6,N,D1,R1,D1,R2,C1,R2,D10,N,D1,R2,C2,D1,C1,L2,D9,N,R1,D1,R1,D1,C1,R2,D10,N,L1,D1,L3,D9,N,D1,R1,D1,C1,L1,C1,D1,L1,D7,N,D1,C1,R1,D1,R1,D10,N,D1,C1,D1,C1,D1,C1,R4,D1,R1,D8,N,D1,R1,D1,R1,C1,R1,D1,R1,D8,N,D1,R2,D1,R2,D7,N,D1,R1,D9,N,D1,R1,D1,R1,D8,N,C1,D1,L2,D9,N,D1,C1,R1,D10,N,D1,C2,D1,C2,D1,L2,D7,N,D1,C1,L1,D7,N,D1,L1,D1,L3,D8,N,D1,R1,C1,D1,L2,D5,N,D1,C1,R2,D1,C1,L1,D7,N,D1,R2,C1,D1,L1,D5,N,R1,D1,R1,C1,D1,C1,R1,C1,D8,L1,N,L1,D6,N,D1,R2,D1,R2,C1,D8,N,L1,D1,L3,D9,N,R1,D1,R1,L1,D1,L4,D5,N,R1,D1,R2,D1,R1,D1,C1,L2,D1,C1,L2,D3,N,R3,D10,N,D1,R2,C1,D1,R1,D7,N,D1,R3,D1,R2,D6,N,R3,D7,N,D1,C1,R1,D1,R1,D4,N,D1,C1,L1,D1,L2,D4,N,R1,D1,R1,D1,R1,D4,N,D1,R4,D1,R1,D4,N,D1,L1,D5,N,D2,R1,D5,N,D1,L1,D1,L2,D3,N,D1,C1,D1,R2,D3,N,C2,D1,L2,D4,N,R1,D1,R2,D5,N,D1,L2,D1,L1,D2,N,D1,R3,D1,R1,D2,N,D1,R2,D3,N,D5,N,D1,C3,D5,N,C2,D1,C1,L2,D4,N,D1,R1,D4,N,C1,D1,L3,D4,N,D2,R4,D1,L1,D3,N,D2,L1,C1,D1,L2,D1,N,D1,C1,L1,D3,N,R2,D1,R1,D1,C1,R2,D4,N,D1,C1,D1,R5,D4,N,D1,R1,C2,D1,R1,C1,D4,N,D1,R1,C1,D5,N,D1,C2,D1,C1,D3,N,D1,R3,D1,C1,D3,N,D1,C1,L2,D3,N,D1,L1,D2,N,D1,N";
+    if (run_game_string(&game, ops, strlen(ops)) == false) {
+        printf("run failed\n");
+    } else {
+        printf("run success\n");
+    }
     print_game(&game);
 }
