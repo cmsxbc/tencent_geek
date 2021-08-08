@@ -23,6 +23,8 @@ const int RANDOM_V = 12358;
 #define SHAPE_TOTAL_COUNT 28
 #define SHAPE_GRID_COUNT 4
 
+#define abs_diff(x, y) (x) < (y) ? ((y) - (x)) : ((x) - (y))
+
 
 const int SHAPES[SHAPE_TOTAL_COUNT][SHAPE_GRID_COUNT][2] = {
     // I 型
@@ -256,6 +258,34 @@ struct game_t {
 
 typedef struct game_t GAME_T;
 
+
+struct search_config_t {
+    double aggregate_height;
+    double line;
+    double hole;
+    double bumpiness;
+    double occupied_below_cordon;
+    double occupied_above_cordon;
+    double score_increase;
+    int max_depth;
+    u_int8_t occupied_cordon;
+};
+
+typedef struct search_config_t SEARCH_CONFIG_T;
+
+
+struct stats_t {
+    u_int8_t heights[X_COUNT];
+    u_int8_t aggregate_height;
+    u_int8_t hole;
+    u_int8_t bumpiness;
+    u_int8_t line_cleared;
+    int8_t occupied_increased;
+};
+
+typedef struct stats_t STATS_T;
+
+
 static inline int get_next_random(int v) {
     return (v * RANDOM_A + RANDOM_C) % RANDOM_M;
 }
@@ -416,10 +446,22 @@ static inline u_int8_t calc_occupied(GAME_T * p_game) {
     return occupied;
 }
 
-static inline bool next_brick(GAME_T * p_game) {
+
+static inline u_int8_t calc_x_height(GAME_T * p_game, int x) {
+    u_int16_t b = 1 << x;
+    for (int y = 0; y < Y_COUNT; y++) {
+        if (p_game->p_grids[y].v & b) {
+            return Y_COUNT - y;
+        }
+    }
+    return 0;
+}
+
+
+static inline bool next_brick(GAME_T * p_game, STATS_T * p_stats) {
     static u_int8_t score_rate[5] = {0, 1, 3, 6, 10};
     u_int8_t cleared_y[4] = {255, 255, 255, 255};
-    int clear = 0;
+    int8_t clear = 0;
     for (int i = 0; i < SHAPE_GRID_COUNT; i++) {
         int x = p_game->brick_center_x + SHAPES[p_game->shape_index][i][0];
         int y = p_game->brick_center_y + SHAPES[p_game->shape_index][i][1];
@@ -455,6 +497,18 @@ static inline bool next_brick(GAME_T * p_game) {
         }
         p_game->p_grids[0].v = GRID_EMPTY;
     }
+    if (p_stats != NULL) {
+        p_stats->line_cleared = clear;
+        for (int x = 0; x < X_COUNT; x++) {
+            p_stats->heights[x] = calc_x_height(p_game, x);
+            p_stats->aggregate_height += p_stats->heights[x];
+        }
+        for (int x = 1; x < X_COUNT; x++) {
+            p_stats->bumpiness += abs_diff(p_stats->heights[x-1], p_stats->heights[x]);
+        }
+        p_stats->occupied_increased = 4 - clear * X_COUNT;
+    }
+
     p_game->score += score_rate[clear] * (p_game->occupied + 4);
     p_game->occupied -= clear * X_COUNT - 4;
     u_int8_t occupied = calc_occupied(p_game);
@@ -535,6 +589,54 @@ static inline void print_all_shape_series() {
 }
 
 
+static inline void print_op_series(OPERATION_T *ops, int op_count) {
+    for (int i = 0; i < op_count; i++) {
+        if (ops[i].s.type == OP_N) {
+            printf("%c", OP_NAMES[OP_N]);
+        } else {
+            printf("%c%d", OP_NAMES[ops[i].s.type], ops[i].s.count);
+        }
+        if (i < op_count - 1) {
+            printf(",");
+        } else {
+            printf("\n");
+        }
+    }
+}
+
+
+static inline double calc_search_score(GAME_T *p_game, SEARCH_CONFIG_T *p_search_config, STATS_T *p_stats) {
+    double score = 0.0;
+    score += p_stats->bumpiness * p_search_config->bumpiness;
+    if (p_game->occupied + p_stats->occupied_increased >= p_search_config->occupied_cordon) {
+        score -= p_stats->occupied_increased * p_search_config->occupied_above_cordon;
+    } else {
+        score += p_stats->occupied_increased * p_search_config->occupied_below_cordon;
+    }
+
+    score -= p_stats->aggregate_height * p_search_config->aggregate_height;
+    score -= p_stats->hole * p_search_config->hole;
+
+    return 0.0;
+}
+
+
+static inline int df_game(SEARCH_CONFIG_T *p_search_config, GAME_T *p_game, int depth) {
+    if (depth >= p_search_config->max_depth) {
+        return 0;
+    }
+    STATS_T stats;
+    next_brick(p_game, &stats);
+    return df_game(p_search_config, p_game, depth+1);
+}
+
+static inline void bf_game(SEARCH_CONFIG_T search_config) {
+    GAME_T game = init_game();
+    df_game(&search_config, &game, 0);
+    free_game(&game);
+}
+
+
 static inline void run_game(GAME_T *p_game, OPERATION_T *operations, int op_count) {
 
 }
@@ -585,7 +687,7 @@ static inline bool run_game_string(GAME_T *p_game, char *op_str, int len) {
             return false;
         }
         if (op_name == 'N') {
-            if (next_brick(p_game) == false) {
+            if (next_brick(p_game, NULL) == false) {
                 printf("next_brick not valid at %d\n", offset);
                 return false;
             }
@@ -622,4 +724,6 @@ int main() {
         printf("run success\n");
     }
     print_game(&game);
+    SEARCH_CONFIG_T config = {0.0};
+    bf_game(config);
 }
