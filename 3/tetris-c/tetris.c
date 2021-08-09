@@ -227,6 +227,8 @@ enum OP_TYPE {
 
 const char OP_NAMES[10] = "CLDUR)N";
 
+const u_int8_t score_rate[5] = {0, 1, 3, 6, 10};
+
 
 union row_t {
     // struct {
@@ -266,12 +268,30 @@ struct search_config_t {
     double bumpiness;
     double occupied_below_cordon;
     double occupied_above_cordon;
-    double score_increase;
+    // double score_increase;
     int max_depth;
+    u_int16_t round_cordon;
     u_int8_t occupied_cordon;
 };
 
 typedef struct search_config_t SEARCH_CONFIG_T;
+
+
+static inline void normalize_weights(SEARCH_CONFIG_T *p_config) {
+    double total = 0.0;
+    total += p_config->line;
+    total += p_config->bumpiness;
+    total += p_config->hole;
+    total += p_config->occupied_below_cordon;
+    total += p_config->occupied_above_cordon;
+    total += p_config->aggregate_height;
+    p_config->line = p_config->line / total;
+    p_config->bumpiness = p_config->bumpiness / total;
+    p_config->hole = p_config->hole / total;
+    p_config->occupied_below_cordon = p_config->occupied_below_cordon / total;
+    p_config->occupied_above_cordon = p_config->occupied_above_cordon / total;
+    p_config->aggregate_height = p_config->aggregate_height / total;
+}
 
 
 struct stats_t {
@@ -321,6 +341,7 @@ static inline GAME_T init_game() {
 static inline void free_game(GAME_T *p_game) {
     if (p_game->p_grids) {
         free(p_game->p_grids);
+        p_game->p_grids = NULL;
     }
 }
 
@@ -459,7 +480,6 @@ static inline u_int8_t calc_x_height(GAME_T * p_game, int x) {
 
 
 static inline bool next_brick(GAME_T * p_game, STATS_T * p_stats) {
-    static u_int8_t score_rate[5] = {0, 1, 3, 6, 10};
     u_int8_t cleared_y[4] = {255, 255, 255, 255};
     int8_t clear = 0;
     for (int i = 0; i < SHAPE_GRID_COUNT; i++) {
@@ -605,7 +625,17 @@ static inline void print_op_series(OPERATION_T *ops, int op_count) {
 }
 
 
+static inline bool is_game_over(GAME_T *p_game) {
+    return p_game->p_grids[0].v > 0 || p_game->brick_count >= MAX_BRICK_COUNT;
+}
+
+
 static inline double calc_search_score(GAME_T *p_game, SEARCH_CONFIG_T *p_search_config, STATS_T *p_stats) {
+    if (p_game->p_grids[0].v > 0) {
+        if (p_game->brick_count < p_search_config->round_cordon) {
+            return 0.0;
+        }
+    }
     double score = 0.0;
     score += p_stats->bumpiness * p_search_config->bumpiness;
     if (p_game->occupied + p_stats->occupied_increased >= p_search_config->occupied_cordon) {
@@ -616,8 +646,9 @@ static inline double calc_search_score(GAME_T *p_game, SEARCH_CONFIG_T *p_search
 
     score -= p_stats->aggregate_height * p_search_config->aggregate_height;
     score -= p_stats->hole * p_search_config->hole;
+    score += score_rate[p_stats->line_cleared] * p_search_config->line;
 
-    return 0.0;
+    return score;
 }
 
 
@@ -633,7 +664,7 @@ static inline int df_game(SEARCH_CONFIG_T *p_search_config, GAME_T *p_game, int 
 static inline void bf_game(SEARCH_CONFIG_T search_config) {
     GAME_T game = init_game();
     df_game(&search_config, &game, 0);
-    free_game(&game);
+    // free_game(&game);
 }
 
 
@@ -724,6 +755,17 @@ int main() {
         printf("run success\n");
     }
     print_game(&game);
-    SEARCH_CONFIG_T config = {0.0};
+    SEARCH_CONFIG_T config = {
+            0.1,
+            0.1,
+            0.1,
+            0.1,
+            0.1,
+            0.1,
+            5,
+            MAX_BRICK_COUNT - 10,
+            120,
+    };
+    normalize_weights(&config);
     bf_game(config);
 }
