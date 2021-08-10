@@ -251,7 +251,7 @@ typedef union row_t ROW_T;
 
 
 struct game_t {
-    ROW_T *p_grids;
+    ROW_T p_grids[Y_COUNT];
     u_int16_t brick_count;
     u_int8_t occupied;
     u_int8_t shape_index;
@@ -334,17 +334,17 @@ static inline int* get_shape_series() {
 
 
 static inline GAME_T init_game() {
-    GAME_T game = {NULL, 0, 0, get_shape_series()[0], INIT_X, INIT_Y, 0};
-    game.p_grids = (ROW_T *) calloc(Y_COUNT, sizeof(ROW_T));
-    memset(game.p_grids, GRID_EMPTY, sizeof(ROW_T) * Y_COUNT);
+    GAME_T game = {{GRID_EMPTY}, 0, 0, get_shape_series()[0], INIT_X, INIT_Y, 0};
+    // game.p_grids = (ROW_T *) calloc(Y_COUNT, sizeof(ROW_T));
+    // memset(game.p_grids, GRID_EMPTY, sizeof(ROW_T) * Y_COUNT);
     return game;
 }
 
 static inline void free_game(GAME_T *p_game) {
-    if (p_game->p_grids) {
-        free(p_game->p_grids);
-        p_game->p_grids = NULL;
-    }
+    // if (p_game->p_grids) {
+    //     free(p_game->p_grids);
+    //     p_game->p_grids = NULL;
+    // }
 }
 
 static inline GAME_T copy_game(GAME_T * p_game) {
@@ -542,6 +542,7 @@ static inline bool next_brick(GAME_T * p_game, STATS_T * p_stats) {
     u_int8_t occupied = calc_occupied(p_game);
     if (p_game->occupied != occupied) {
         printf("something wrong for occupied %d != %d\n", p_game->occupied, occupied);
+        print_game(p_game);
     }
     p_game->brick_count ++;
     p_game->shape_index = get_shape_series()[p_game->brick_count];
@@ -552,12 +553,12 @@ static inline bool next_brick(GAME_T * p_game, STATS_T * p_stats) {
 
 
 static inline u_int8_t get_max_move_d(GAME_T * p_game) {
-    u_int8_t max_dy = 0;
+    u_int8_t max_dy = Y_COUNT;
     for (int i = 0; i < SHAPE_GRID_COUNT; i++) {
         u_int8_t x = p_game->brick_center_x + SHAPES[p_game->shape_index][i][0];
         u_int8_t y = p_game->brick_center_y + SHAPES[p_game->shape_index][i][1];
         u_int8_t cur_dy = Y_COUNT - calc_x_height(p_game, x) - y - 1;
-        max_dy = cur_dy > max_dy ? cur_dy : max_dy;
+        max_dy = cur_dy < max_dy ? cur_dy : max_dy;
     }
     return max_dy;
 }
@@ -657,11 +658,11 @@ static inline double calc_search_score(GAME_T *p_game, SEARCH_CONFIG_T *p_search
         }
     }
     double score = 0.0;
-    score += p_stats->bumpiness * p_search_config->bumpiness;
-    if (p_game->occupied + p_stats->occupied_increased >= p_search_config->occupied_cordon) {
-        score -= p_stats->occupied_increased * p_search_config->occupied_above_cordon;
+    score -= p_stats->bumpiness * p_search_config->bumpiness;
+    if (p_game->occupied >= p_search_config->occupied_cordon) {
+        score -= p_game->occupied * p_search_config->occupied_above_cordon;
     } else {
-        score += p_stats->occupied_increased * p_search_config->occupied_below_cordon;
+        score += p_game->occupied * p_search_config->occupied_below_cordon;
     }
 
     score -= p_stats->aggregate_height * p_search_config->aggregate_height;
@@ -672,43 +673,45 @@ static inline double calc_search_score(GAME_T *p_game, SEARCH_CONFIG_T *p_search
 }
 
 
-static inline double df_game(SEARCH_CONFIG_T *p_search_config, GAME_T *p_game, int depth, OPERATION_T *ops, int *op_count) {
-    double max_score = 0.0;
+static double df_game(SEARCH_CONFIG_T *p_search_config, GAME_T *p_game, int depth, OPERATION_T *ops, int *op_count) {
+    double max_score = -2e100;
     double cur_score;
     OPERATION_T max_ops[MAX_OP_ON_BRICK];
     OPERATION_T cur_ops[MAX_OP_ON_BRICK] = {{0}};
     int max_op_count = 0;
     for (int rotate_n = 0; rotate_n < SHAPE_STATE_COUNT; rotate_n ++) {
+        GAME_T game_s = copy_game(p_game);
         int cur_op_count = 0;
         cur_ops[cur_op_count].s.type = OP_C;
         cur_ops[cur_op_count].s.count = rotate_n;
-        GAME_T game_s = copy_game(p_game);
         operate(&game_s, cur_ops[cur_op_count]);
         cur_op_count++;
         if (!valid(&game_s) || is_game_over(&game_s)) {
+            free_game(&game_s);
             continue;
         }
         for (int x = 0; x < X_COUNT; x++) {
+            cur_op_count = 1;
             GAME_T game = copy_game(&game_s);
             if (x < INIT_X) {
                 cur_ops[cur_op_count].s.type = OP_L;
                 cur_ops[cur_op_count].s.count = INIT_X - x;
-                operate(&game_s, cur_ops[cur_op_count]);
+                operate(&game, cur_ops[cur_op_count]);
                 cur_op_count ++;
             } else if (x > INIT_X) {
                 cur_ops[cur_op_count].s.type = OP_R;
                 cur_ops[cur_op_count].s.count = x - INIT_X;
-                operate(&game_s, cur_ops[cur_op_count]);
+                operate(&game, cur_ops[cur_op_count]);
                 cur_op_count ++;
             }
-            if (!valid(&game_s) | is_game_over(&game_s)) {
+            if (!valid(&game) | is_game_over(&game)) {
                 continue;
             }
-            u_int8_t max_dy = get_max_move_d(&game_s);
+            u_int8_t max_dy = get_max_move_d(&game);
             if (max_dy > 0) {
                 cur_ops[cur_op_count].s.type = OP_D;
                 cur_ops[cur_op_count].s.count = max_dy;
-                operate(&game_s, cur_ops[cur_op_count]);
+                operate(&game, cur_ops[cur_op_count]);
                 cur_op_count ++;
             }
             STATS_T stats;
@@ -723,12 +726,13 @@ static inline double df_game(SEARCH_CONFIG_T *p_search_config, GAME_T *p_game, i
             if (cur_score > max_score) {
                 memcpy(max_ops, cur_ops, sizeof(OPERATION_T) * cur_op_count);
                 max_op_count = cur_op_count;
+                max_score = cur_score;
             }
         }
     }
     if (ops != NULL && op_count != NULL) {
         *op_count = 0;
-        for (*op_count; *op_count < max_op_count; *op_count++) {
+        for (*op_count; *op_count < max_op_count; (*op_count)++) {
             ops[*op_count].v = max_ops[*op_count].v;
         }
     }
@@ -846,13 +850,13 @@ int main() {
     }
     print_game(&game);
     SEARCH_CONFIG_T config = {
+            0.510066,
+            0.760666,
+            0.35663,
+            0.184483,
             0.1,
-            0.1,
-            0.1,
-            0.1,
-            0.1,
-            0.1,
-            5,
+            0.5,
+            2,
             MAX_BRICK_COUNT - 10,
             120,
     };
