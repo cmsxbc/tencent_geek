@@ -22,6 +22,7 @@ const int RANDOM_V = 12358;
 #define SHAPE_STATE_COUNT 4
 #define SHAPE_TOTAL_COUNT 28
 #define SHAPE_GRID_COUNT 4
+#define MAX_OP_ON_BRICK 4
 
 #define abs_diff(x, y) (x) < (y) ? ((y) - (x)) : ((x) - (y))
 
@@ -203,6 +204,7 @@ const int SHAPES[SHAPE_TOTAL_COUNT][SHAPE_GRID_COUNT][2] = {
         {-1, 0},
     },
 };
+
 
 union operation_t {
     struct {
@@ -414,7 +416,13 @@ static inline void print_game(GAME_T * p_game) {
 static inline bool valid(GAME_T *p_game) {
     for (int i = 0; i < SHAPE_GRID_COUNT; i++) {
         int x = p_game->brick_center_x + SHAPES[p_game->shape_index][i][0];
+        if (x < 0 || x >= X_COUNT) {
+            return false;
+        }
         int y = p_game->brick_center_y + SHAPES[p_game->shape_index][i][1];
+        if (y >= Y_COUNT) {
+            return false;
+        }
         if ((p_game->p_grids[y].v & (1 << x)) == GRID_SET) {
             return false;
         }
@@ -543,6 +551,18 @@ static inline bool next_brick(GAME_T * p_game, STATS_T * p_stats) {
 }
 
 
+static inline u_int8_t get_max_move_d(GAME_T * p_game) {
+    u_int8_t max_dy = 0;
+    for (int i = 0; i < SHAPE_GRID_COUNT; i++) {
+        u_int8_t x = p_game->brick_center_x + SHAPES[p_game->shape_index][i][0];
+        u_int8_t y = p_game->brick_center_y + SHAPES[p_game->shape_index][i][1];
+        u_int8_t cur_dy = Y_COUNT - calc_x_height(p_game, x) - y - 1;
+        max_dy = cur_dy > max_dy ? cur_dy : max_dy;
+    }
+    return max_dy;
+}
+
+
 static inline void rotate(GAME_T *p_game, int n) {
     u_int8_t shape_offset = p_game->shape_index % 4;
     u_int8_t shape_base = p_game->shape_index - shape_offset;
@@ -652,18 +672,88 @@ static inline double calc_search_score(GAME_T *p_game, SEARCH_CONFIG_T *p_search
 }
 
 
-static inline int df_game(SEARCH_CONFIG_T *p_search_config, GAME_T *p_game, int depth) {
-    if (depth >= p_search_config->max_depth) {
-        return 0;
+static inline double df_game(SEARCH_CONFIG_T *p_search_config, GAME_T *p_game, int depth, OPERATION_T *ops, int *op_count) {
+    double max_score = 0.0;
+    double cur_score;
+    OPERATION_T max_ops[MAX_OP_ON_BRICK];
+    OPERATION_T cur_ops[MAX_OP_ON_BRICK] = {{0}};
+    int max_op_count = 0;
+    for (int rotate_n = 0; rotate_n < SHAPE_STATE_COUNT; rotate_n ++) {
+        int cur_op_count = 0;
+        cur_ops[cur_op_count].s.type = OP_C;
+        cur_ops[cur_op_count].s.count = rotate_n;
+        GAME_T game_s = copy_game(p_game);
+        operate(&game_s, cur_ops[cur_op_count]);
+        cur_op_count++;
+        if (!valid(&game_s) || is_game_over(&game_s)) {
+            continue;
+        }
+        for (int x = 0; x < X_COUNT; x++) {
+            GAME_T game = copy_game(&game_s);
+            if (x < INIT_X) {
+                cur_ops[cur_op_count].s.type = OP_L;
+                cur_ops[cur_op_count].s.count = INIT_X - x;
+                operate(&game_s, cur_ops[cur_op_count]);
+                cur_op_count ++;
+            } else if (x > INIT_X) {
+                cur_ops[cur_op_count].s.type = OP_R;
+                cur_ops[cur_op_count].s.count = x - INIT_X;
+                operate(&game_s, cur_ops[cur_op_count]);
+                cur_op_count ++;
+            }
+            if (!valid(&game_s) | is_game_over(&game_s)) {
+                continue;
+            }
+            u_int8_t max_dy = get_max_move_d(&game_s);
+            if (max_dy > 0) {
+                cur_ops[cur_op_count].s.type = OP_D;
+                cur_ops[cur_op_count].s.count = max_dy;
+                operate(&game_s, cur_ops[cur_op_count]);
+                cur_op_count ++;
+            }
+            STATS_T stats;
+            bool validation = next_brick(&game, &stats);
+            if (!validation) {
+                cur_score = -2.222223e100;
+            } else if (depth >= p_search_config->max_depth || p_game->brick_count >= MAX_BRICK_COUNT - 1) {
+                cur_score = calc_search_score(&game, p_search_config, &stats);
+            } else {
+                cur_score = df_game(p_search_config, &game, depth+1, NULL, NULL);
+            }
+            if (cur_score > max_score) {
+                memcpy(max_ops, cur_ops, sizeof(OPERATION_T) * cur_op_count);
+                max_op_count = cur_op_count;
+            }
+        }
     }
-    STATS_T stats;
-    next_brick(p_game, &stats);
-    return df_game(p_search_config, p_game, depth+1);
+    if (ops != NULL && op_count != NULL) {
+        *op_count = 0;
+        for (*op_count; *op_count < max_op_count; *op_count++) {
+            ops[*op_count].v = max_ops[*op_count].v;
+        }
+    }
+    return max_score;
 }
 
 static inline void bf_game(SEARCH_CONFIG_T search_config) {
     GAME_T game = init_game();
-    df_game(&search_config, &game, 0);
+    OPERATION_T cur_ops[MAX_OP_ON_BRICK];
+    int op_count = 0;
+    do {
+        op_count = 0;
+        memset(cur_ops, 0, sizeof(OPERATION_T) * MAX_OP_ON_BRICK);
+        df_game(&search_config, &game, 0, cur_ops, &op_count);
+        for (int i = 0; i < op_count; i++) {
+            operate(&game, cur_ops[i]);
+        }
+        printf("current_step: %d, current_score: %d, ops: ", game.brick_count, game.score);
+        print_op_series(cur_ops, op_count);
+        if (!next_brick(&game, NULL)) {
+            printf("[WARN] invalid while do next brick!!!");
+            break;
+        }
+    } while(valid(&game) && !is_game_over(&game));
+    print_game(&game);
     // free_game(&game);
 }
 
