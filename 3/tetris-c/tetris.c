@@ -527,8 +527,22 @@ static inline bool next_brick(GAME_T * p_game, STATS_T * p_stats) {
     }
     if (p_stats != NULL) {
         p_stats->line_cleared = clear;
+        p_stats->hole = 0;
+        p_stats->aggregate_height = 0;
+        p_stats->bumpiness = 0;
         for (int x = 0; x < X_COUNT; x++) {
-            p_stats->heights[x] = calc_x_height(p_game, x);
+            bool block = false;
+            u_int16_t b = 1 << x;
+            for (int y = 0; y < Y_COUNT; y++) {
+                if (p_game->p_grids[y].v & b) {
+                    if (!block) {
+                        p_stats->heights[x] = Y_COUNT - y;
+                        block = true;
+                    }
+                } else if ((p_game->p_grids[y].v & b) == 0 && block) {
+                    p_stats->hole ++;
+                }
+            }
             p_stats->aggregate_height += p_stats->heights[x];
         }
         for (int x = 1; x < X_COUNT; x++) {
@@ -682,16 +696,18 @@ static double df_game(SEARCH_CONFIG_T *p_search_config, GAME_T *p_game, int dept
     for (int rotate_n = 0; rotate_n < SHAPE_STATE_COUNT; rotate_n ++) {
         GAME_T game_s = copy_game(p_game);
         int cur_op_count = 0;
-        cur_ops[cur_op_count].s.type = OP_C;
-        cur_ops[cur_op_count].s.count = rotate_n;
-        operate(&game_s, cur_ops[cur_op_count]);
-        cur_op_count++;
+        if (rotate_n > 0) {
+            cur_ops[cur_op_count].s.type = OP_C;
+            cur_ops[cur_op_count].s.count = rotate_n;
+            operate(&game_s, cur_ops[cur_op_count]);
+            cur_op_count++;
+        }
         if (!valid(&game_s) || is_game_over(&game_s)) {
             free_game(&game_s);
             continue;
         }
         for (int x = 0; x < X_COUNT; x++) {
-            cur_op_count = 1;
+            cur_op_count = rotate_n > 0 ? 1 : 0;
             GAME_T game = copy_game(&game_s);
             if (x < INIT_X) {
                 cur_ops[cur_op_count].s.type = OP_L;
@@ -854,9 +870,9 @@ int main() {
             0.760666,
             0.35663,
             0.184483,
-            0.1,
-            0.5,
-            2,
+            0.2,
+            0.7,
+            3,
             MAX_BRICK_COUNT - 10,
             120,
     };
