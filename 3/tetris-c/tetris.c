@@ -687,12 +687,20 @@ static inline double calc_search_score(GAME_T *p_game, SEARCH_CONFIG_T *p_search
 }
 
 
-static double df_game(SEARCH_CONFIG_T *p_search_config, GAME_T *p_game, int depth, OPERATION_T *ops, int *op_count) {
+static double df_game(SEARCH_CONFIG_T *p_search_config, GAME_T *p_game, int depth, OPERATION_T *ops, int *op_count, u_int8_t * mapping) {
     double max_score = -2e100;
     double cur_score;
     OPERATION_T max_ops[MAX_OP_ON_BRICK];
     OPERATION_T cur_ops[MAX_OP_ON_BRICK] = {{0}};
     int max_op_count = 0;
+    if (depth == 0 && mapping == NULL) {
+        mapping = (u_int8_t *) malloc(sizeof(u_int8_t) * (p_search_config->max_depth+1) * Y_COUNT * X_COUNT * SHAPE_STATE_COUNT);
+        if (mapping == NULL) {
+            printf("malloc failed");
+            exit(1);
+        }
+        memset(mapping, 0, sizeof(u_int8_t) * (p_search_config->max_depth+1) * Y_COUNT * X_COUNT * SHAPE_STATE_COUNT);
+    }
     for (int rotate_n = 0; rotate_n < SHAPE_STATE_COUNT; rotate_n ++) {
         GAME_T game_s = copy_game(p_game);
         int cur_op_count = 0;
@@ -731,13 +739,24 @@ static double df_game(SEARCH_CONFIG_T *p_search_config, GAME_T *p_game, int dept
                 cur_op_count ++;
             }
             STATS_T stats;
+            size_t mapping_index = depth * SHAPE_STATE_COUNT * Y_COUNT * X_COUNT;
+            mapping_index += (game.shape_index % SHAPE_STATE_COUNT) * Y_COUNT * X_COUNT;
+            mapping_index += game.brick_center_y * X_COUNT + game.brick_center_x;
+            // if (mapping[mapping_index]) {
+            //     printf("%lu = %lu + %lu + %lu skipped\n", mapping_index,
+            //            depth * SHAPE_STATE_COUNT*Y_COUNT*X_COUNT,
+            //            (game.shape_index % SHAPE_STATE_COUNT) * Y_COUNT * X_COUNT,
+            //            game.brick_center_y * X_COUNT + game.brick_center_x);
+            //     continue;
+            // }
+            mapping[mapping_index] = 1;
             bool validation = next_brick(&game, &stats);
             if (!validation) {
                 cur_score = -2.222223e100;
             } else if (depth >= p_search_config->max_depth || p_game->brick_count >= MAX_BRICK_COUNT - 1) {
                 cur_score = calc_search_score(&game, p_search_config, &stats);
             } else {
-                cur_score = df_game(p_search_config, &game, depth+1, NULL, NULL);
+                cur_score = df_game(p_search_config, &game, depth+1, NULL, NULL, mapping);
             }
             if (cur_score > max_score) {
                 memcpy(max_ops, cur_ops, sizeof(OPERATION_T) * cur_op_count);
@@ -762,7 +781,7 @@ static inline void bf_game(SEARCH_CONFIG_T search_config) {
     do {
         op_count = 0;
         memset(cur_ops, 0, sizeof(OPERATION_T) * MAX_OP_ON_BRICK);
-        df_game(&search_config, &game, 0, cur_ops, &op_count);
+        df_game(&search_config, &game, 0, cur_ops, &op_count, NULL);
         for (int i = 0; i < op_count; i++) {
             operate(&game, cur_ops[i]);
         }
@@ -872,7 +891,7 @@ int main() {
             0.184483,
             0.2,
             0.7,
-            3,
+            2,
             MAX_BRICK_COUNT - 10,
             120,
     };
