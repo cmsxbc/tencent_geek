@@ -700,6 +700,8 @@ static double df_game(SEARCH_CONFIG_T *p_search_config, GAME_T *p_game, int dept
             exit(1);
         }
         memset(mapping, 0, sizeof(u_int8_t) * (p_search_config->max_depth+1) * Y_COUNT * X_COUNT * SHAPE_STATE_COUNT);
+    } else {
+        memset(mapping+depth*SHAPE_STATE_COUNT*Y_COUNT*X_COUNT, 0, sizeof(u_int8_t) * Y_COUNT * X_COUNT * SHAPE_STATE_COUNT);
     }
     for (int rotate_n = 0; rotate_n < SHAPE_STATE_COUNT; rotate_n ++) {
         GAME_T game_s = copy_game(p_game);
@@ -742,13 +744,13 @@ static double df_game(SEARCH_CONFIG_T *p_search_config, GAME_T *p_game, int dept
             size_t mapping_index = depth * SHAPE_STATE_COUNT * Y_COUNT * X_COUNT;
             mapping_index += (game.shape_index % SHAPE_STATE_COUNT) * Y_COUNT * X_COUNT;
             mapping_index += game.brick_center_y * X_COUNT + game.brick_center_x;
-            // if (mapping[mapping_index]) {
-            //     printf("%lu = %lu + %lu + %lu skipped\n", mapping_index,
-            //            depth * SHAPE_STATE_COUNT*Y_COUNT*X_COUNT,
-            //            (game.shape_index % SHAPE_STATE_COUNT) * Y_COUNT * X_COUNT,
-            //            game.brick_center_y * X_COUNT + game.brick_center_x);
-            //     continue;
-            // }
+            if (mapping[mapping_index]) {
+                printf("%lu = %lu + %lu + %lu skipped\n", mapping_index,
+                       depth * SHAPE_STATE_COUNT*Y_COUNT*X_COUNT,
+                       (game.shape_index % SHAPE_STATE_COUNT) * Y_COUNT * X_COUNT,
+                       game.brick_center_y * X_COUNT + game.brick_center_x);
+                continue;
+            }
             mapping[mapping_index] = 1;
             bool validation = next_brick(&game, &stats);
             if (!validation) {
